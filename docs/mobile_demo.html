@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job-Copilot — Interactive Mobile Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --phone-border: #1e2640;
+      --phone-bg: #0d121f;
+      --card-bg: #141b2d;
+      --card-hover: #1a233a;
+      --surface: #1e2942;
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.4);
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.3);
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f3f4f6;
+      --text-muted: #94a3b8;
+      --border: #222f4c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #151d36 0%, #080b13 70%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Outer Container & Intro */
+    .header-banner {
+      text-align: center;
+      margin-bottom: 24px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .header-banner h1 {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .header-banner p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .phone-stage {
+      position: relative;
+      perspective: 1200px;
+    }
+
+    /* Realistic Phone Shell */
+    .phone-frame {
+      width: 390px;
+      height: 800px;
+      background: var(--phone-bg);
+      border-radius: 48px;
+      border: 10px solid #1c2336;
+      box-shadow: 
+        0 25px 70px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(59, 130, 246, 0.15),
+        inset 0 0 3px rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      animation: phoneEntrance 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Dynamic Island / Notch */
+    .notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 26px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      transition: all 0.3s ease;
+    }
+
+    .notch-camera {
+      width: 10px;
+      height: 10px;
+      background: #0f172a;
+      border-radius: 50%;
+      border: 1px solid #1e293b;
+    }
+
+    .notch-sensor {
+      width: 6px;
+      height: 6px;
+      background: #064e3b;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #10b981;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 48px;
+      padding: 14px 24px 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      z-index: 40;
+    }
+
+    /* Screen Viewport */
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 12px 18px 24px 18px;
+      position: relative;
+    }
+
+    .screen-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Screen Sections */
+    .screen {
+      display: none;
+      animation: slideInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-bar {
+      height: 72px;
+      background: rgba(13, 18, 31, 0.92);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 10px 10px 10px;
+      z-index: 40;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 12px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      margin-bottom: 4px;
+      transition: transform 0.2s ease, stroke 0.2s ease;
+    }
+
+    .nav-btn.active {
+      color: #60a5fa;
+    }
+
+    .nav-btn.active svg {
+      stroke: #60a5fa;
+      transform: translateY(-2px);
+    }
+
+    .nav-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      width: 14px;
+      height: 3px;
+      background: #60a5fa;
+      border-radius: 6px;
+      box-shadow: 0 0 8px #60a5fa;
+    }
+
+    /* UI Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 14px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: #2e416a;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .job-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .company-name {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .score-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .score-high {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .score-mid {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 12px 0;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+
+    .tag-match {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+    }
+
+    .tag-gap {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+    }
+
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 18px var(--primary-glow);
+    }
+
+    .btn:hover {
+      transform: scale(0.98);
+      filter: brightness(1.1);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: none;
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    /* Verification Badge */
+    .fact-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      background: #0f2942;
+      border: 1px solid #1e4976;
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 6px;
+    }
+
+    .guard-banner {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.15));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: #6ee7b7;
+      font-weight: 600;
+    }
+
+    /* Success Confetti overlay */
+    .success-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 18, 31, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 16px;
+      box-shadow: 0 0 30px var(--accent-glow);
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Keyframes */
+    @keyframes phoneEntrance {
+      0% { opacity: 0; transform: translateY(40px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes slideInUp {
+      0% { opacity: 0; transform: translateY(16px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Interactive Pill Switcher */
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .filter-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-pill.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #3b82f6;
+    }
+
+    .bullet-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .bullet-card p {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-banner">
+    <h1>Job-Copilot Mobile Demo</h1>
+    <p>Interactive Prototype with Real Data & Dynamic Workflow</p>
+  </div>
+
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <!-- Notch / Dynamic Island -->
+      <div class="notch" id="dynamicIsland">
+        <div class="notch-camera"></div>
+        <div class="notch-sensor"></div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span>09:41</span>
+        <span>5G  ● 98%</span>
+      </div>
+
+      <!-- Viewport Content -->
+      <div class="screen-content" id="screenContent">
+
+        <!-- 1. FEED SCREEN -->
+        <div class="screen active" id="feedScreen">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 800;">Target Roles</h2>
+              <p style="font-size: 12px; color: var(--text-muted);">Synchronized with Greenhouse & Lever</p>
+            </div>
+            <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; font-size: 11px; padding: 4px 8px; border-radius: 8px; font-weight: 700;">8 NEW</span>
+          </div>
+
+          <div class="filter-pills">
+            <div class="filter-pill active">Top Matches (>80%)</div>
+            <div class="filter-pill">Remote Only</div>
+            <div class="filter-pill">FastAPI / Python</div>
+          </div>
+
+          <!-- Job Card 1 -->
+          <div class="card" onclick="openJobDetail('Acme Corp', 'Sr. Backend Engineer', '88%')">
+            <div class="card-top">
+              <div>
+                <div class="job-title">Sr. Backend Engineer</div>
+                <div class="company-name">
+                  <span>🏢 Acme Corp</span> • <span>Bengaluru (Hybrid)</span>
+                </div>
+              </div>
+              <div class="score-badge score-high">⚡ 88%</div>
+            </div>
+            <div class="tags-row">
+              <span class="tag tag-match">✓ Python</span>
+              <span class="tag tag-match">✓ PostgreSQL</span>
+              <span class="tag tag-match">✓ FastAPI</span>
+              <span class="tag tag-gap">⚠ Kafka Gap</span>
+            </div>
+            <button class="btn" onclick="event.stopPropagation(); goToTailor('Acme Corp', 'Sr. Backend Engineer')">
+              Tailor Resume & Bullets
+            </button>
+          </div>
+
+          <!-- Job Card 2 -->
+          <div class="card" onclick="openJobDetail('Stripe', 'Platform Engineer', '76%')">
+            <div class="card-top">
+              <div>
+                <div class="job-title">Platform Engineer</div>
+                <div class="company-name">
+                  <span>🏢 Stripe</span> • <span>Remote (India)</span>
+                </div>
+              </div>
+              <div class="score-badge score-mid">⚡ 76%</div>
+            </div>
+            <div class="tags-row">
+              <span class="tag tag-match">✓ Docker</span>
+              <span class="tag tag-match">✓ CI/CD</span>
+              <span class="tag tag-gap">⚠ Go (Preferred)</span>
+            </div>
+            <button class="btn btn-secondary" onclick="event.stopPropagation(); goToTailor('Stripe', 'Platform Engineer')">
+              Tailor Resume & Bullets
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. TAILOR & APPROVE SCREEN -->
+        <div class="screen" id="tailorScreen">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <button onclick="nav('feedScreen')" style="background:none; border:none; color:#60a5fa; cursor:pointer; font-weight:700;">← Back</button>
+            <h2 style="font-size: 18px; font-weight: 800;" id="tailorCompanyTitle">Acme Corp Tailoring</h2>
+          </div>
+
+          <div class="guard-banner">
+            <span>🛡️</span>
+            <span>Citation Validator: 0 Hallucinations</span>
+          </div>
+
+          <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">
+            Targeted Bullets (Generated v1)
+          </div>
+
+          <div class="bullet-card">
+            <p>"Architected low-latency FastAPI microservices serving 10,000 req/s with sub-50ms p95 latency."</p>
+            <div class="fact-badge">Cites Fact #12 (Python/FastAPI)</div>
+          </div>
+
+          <div class="bullet-card">
+            <p>"Optimized PostgreSQL query schemas and indexing, decreasing database load by 35% on high-load clusters."</p>
+            <div class="fact-badge">Cites Fact #8 (PostgreSQL Tuning)</div>
+          </div>
+
+          <div class="bullet-card">
+            <p>"Automated containerized CI/CD deployment pipelines using Docker, slashing release cycles by half."</p>
+            <div class="fact-badge">Cites Fact #19 (Docker & CI/CD)</div>
+          </div>
+
+          <button class="btn" style="margin-top: 10px;" onclick="approveApplication()">
+            ✅ Approve & Generate LaTeX PDF
+          </button>
+        </div>
+
+        <!-- 3. PIPELINE SCREEN -->
+        <div class="screen" id="pipelineScreen">
+          <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 6px;">Applications Pipeline</h2>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Real external confirmations tracked</p>
+
+          <div class="card" style="border-left: 4px solid #10b981;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="job-title" style="font-size: 15px;">Acme Corp</div>
+                <div class="company-name">Sr. Backend Engineer</div>
+              </div>
+              <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                Confirmed 🎉
+              </span>
+            </div>
+            <div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">
+              Evidence: "Thank you for applying" email verified at 09:12 AM
+            </div>
+          </div>
+
+          <div class="card" style="border-left: 4px solid #3b82f6;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="job-title" style="font-size: 15px;">Stripe</div>
+                <div class="company-name">Platform Engineer</div>
+              </div>
+              <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                Interview Call 🔥
+              </span>
+            </div>
+            <div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">
+              Evidence: Recruiter invitation email detected in Gmail
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. INBOX RESOLUTION SCREEN -->
+        <div class="screen" id="inboxScreen">
+          <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 6px;">Inbox Resolution</h2>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Gmail Sync (No bodies stored)</p>
+
+          <div class="card" id="inboxItem1">
+            <div style="font-size: 12px; color: #60a5fa; font-weight: 700;">From: recruiter@innovate.io</div>
+            <div class="job-title" style="font-size: 14px; margin: 4px 0;">"Next steps: Technical assessment"</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Unmatched to current records. Would you like to link it?</p>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn" style="font-size: 12px; padding: 8px;" onclick="resolveInbox('inboxItem1')">Link Application</button>
+              <button class="btn btn-secondary" style="font-size: 12px; padding: 8px;" onclick="resolveInbox('inboxItem1')">Dismiss</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. FACTS PROFILE SCREEN -->
+        <div class="screen" id="profileScreen">
+          <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 6px;">Verified Facts Ledger</h2>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Never edited in-place (Superseded only)</p>
+
+          <div class="bullet-card">
+            <div style="display:flex; justify-content:space-between;">
+              <span style="font-weight:700; color:#fff; font-size:13px;">Fact #12 — Skill</span>
+              <span style="color:#10b981; font-size:11px; font-weight:700;">✓ Verified</span>
+            </div>
+            <p style="margin-top:4px;">"Engineered FastAPI Python microservices processing 10k req/s."</p>
+          </div>
+
+          <div class="bullet-card">
+            <div style="display:flex; justify-content:space-between;">
+              <span style="font-weight:700; color:#fff; font-size:13px;">Fact #8 — Experience</span>
+              <span style="color:#10b981; font-size:11px; font-weight:700;">✓ Verified</span>
+            </div>
+            <p style="margin-top:4px;">"PostgreSQL schema optimization & index tuning, reducing 35% latency."</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Success Modal Overlay -->
+      <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">📄</div>
+        <h3 style="font-size: 20px; font-weight: 800; color: #fff;">LaTeX PDF Generated!</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 8px 0 20px 0;">
+          All tailored bullets injected into your .tex template. Ready to share or apply.
+        </p>
+        <button class="btn" onclick="closeSuccess()">View in Pipeline</button>
+      </div>
+
+      <!-- Bottom Nav -->
+      <div class="bottom-bar">
+        <button class="nav-btn active" id="tabFeed" onclick="switchTab('feedScreen', 'tabFeed')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+          Discover
+        </button>
+
+        <button class="nav-btn" id="tabPipeline" onclick="switchTab('pipelineScreen', 'tabPipeline')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+          Pipeline
+        </button>
+
+        <button class="nav-btn" id="tabInbox" onclick="switchTab('inboxScreen', 'tabInbox')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+          </svg>
+          Inbox
+        </button>
+
+        <button class="nav-btn" id="tabProfile" onclick="switchTab('profileScreen', 'tabProfile')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          Facts
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function switchTab(screenId, tabBtnId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      document.getElementById(tabBtnId).classList.add('active');
+    }
+
+    function goToTailor(company, role) {
+      document.getElementById('tailorCompanyTitle').innerText = `${company} Tailoring`;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('tailorScreen').classList.add('active');
+    }
+
+    function approveApplication() {
+      // Trigger dynamic island glow
+      const island = document.getElementById('dynamicIsland');
+      island.style.boxShadow = '0 0 15px #10b981';
+      setTimeout(() => island.style.boxShadow = 'none', 1200);
+
+      document.getElementById('successOverlay').style.display = 'flex';
+    }
+
+    function closeSuccess() {
+      document.getElementById('successOverlay').style.display = 'none';
+      switchTab('pipelineScreen', 'tabPipeline');
+    }
+
+    function resolveInbox(elementId) {
+      const el = document.getElementById(elementId);
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(50px)';
+      el.style.transition = 'all 0.3s ease';
+      setTimeout(() => el.remove(), 300);
+    }
+  </script>
+</body>
+</html>

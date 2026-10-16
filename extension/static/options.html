@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="ui.css" />
+    <title>job-copilot options</title>
+  </head>
+  <body class="options">
+    <div class="brand"><span class="mark"></span>job-copilot</div>
+    <form id="form">
+      <label>
+        Server address
+        <input id="baseUrl" type="url" required placeholder="http://localhost:8000" />
+        <span class="muted small">Where the job-copilot API and console run.</span>
+      </label>
+      <label>
+        Access token
+        <input id="token" type="password" required autocomplete="off" />
+        <span class="muted small">JOBCOPILOT_API_TOKEN from backend/.env. Stored only in this browser profile.</span>
+      </label>
+      <button class="btn primary" type="submit">Save and test</button>
+      <p id="result" role="status"></p>
+    </form>
+    <script src="options.js"></script>
+  </body>
+</html>

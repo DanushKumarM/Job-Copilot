@@ -1,0 +1,54 @@
+[project]
+name = "jobcopilot"
+version = "0.1.0"
+description = "Job-search copilot: evidence-cited applications and confirmed outcome tracking."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "pydantic-settings>=2.4",
+    "sqlalchemy>=2.0.35",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.2",
+    "httpx>=0.27",
+    "rapidfuzz>=3.9",
+    # Pinned to a minor: migration 0004 installs the schema of the installed version.
+    "procrastinate>=3.10,<3.11",
+    "google-auth-oauthlib>=1.2",
+    "keyring>=25",
+    # PDF rendering (design 9 names WeasyPrint, which needs GTK; fpdf2 is pure Python).
+    "fpdf2>=2.8",
+    "jinja2>=3.1",
+    "google-genai>=1.0",
+]
+
+[project.scripts]
+jobcopilot = "jobcopilot.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6", "pypdf>=5"]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint.per-file-ignores]
+"migrations/versions/*" = ["E501"]

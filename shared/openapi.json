@@ -1,0 +1,4247 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "job-copilot",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/api/profile/resume": {
+   "post": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Import Resume",
+    "operationId": "import_resume_api_profile_resume_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ResumeIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/FactOut"
+         },
+         "title": "Response Import Resume Api Profile Resume Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/profile/facts": {
+   "get": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "List Facts",
+    "operationId": "list_facts_api_profile_facts_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "$ref": "#/components/schemas/FactStatus"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/FactOut"
+         },
+         "title": "Response List Facts Api Profile Facts Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Add Fact",
+    "operationId": "add_fact_api_profile_facts_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FactIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FactOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/profile/facts/{fact_id}/verify": {
+   "post": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Verify Fact",
+    "operationId": "verify_fact_api_profile_facts__fact_id__verify_post",
+    "parameters": [
+     {
+      "name": "fact_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Fact Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FactOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/profile/facts/{fact_id}/reject": {
+   "post": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Reject Fact",
+    "operationId": "reject_fact_api_profile_facts__fact_id__reject_post",
+    "parameters": [
+     {
+      "name": "fact_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Fact Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FactOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/profile/facts/{fact_id}/revise": {
+   "post": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Revise Fact",
+    "operationId": "revise_fact_api_profile_facts__fact_id__revise_post",
+    "parameters": [
+     {
+      "name": "fact_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Fact Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/FactRevision"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/FactOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/profile/preferences": {
+   "get": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Get Preferences",
+    "operationId": "get_preferences_api_profile_preferences_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Preferences"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "put": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Put Preferences",
+    "operationId": "put_preferences_api_profile_preferences_put",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Preferences"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Preferences"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/profile/answers": {
+   "get": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "List Answers",
+    "operationId": "list_answers_api_profile_answers_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/AnswerOut"
+         },
+         "title": "Response List Answers Api Profile Answers Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/profile/answers/{question_key}": {
+   "put": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Put Answer",
+    "operationId": "put_answer_api_profile_answers__question_key__put",
+    "parameters": [
+     {
+      "name": "question_key",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Question Key"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AnswerIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AnswerOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/jobs": {
+   "post": {
+    "tags": [
+     "jobs"
+    ],
+    "summary": "Paste Job",
+    "description": "Ingest a pasted job description (FR4) and evaluate it straight away.",
+    "operationId": "paste_job_api_jobs_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PastedJobIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/JobDetail"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "jobs"
+    ],
+    "summary": "List Jobs",
+    "operationId": "list_jobs_api_jobs_get",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 100,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/JobSummary"
+         },
+         "title": "Response List Jobs Api Jobs Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/jobs/{job_id}": {
+   "get": {
+    "tags": [
+     "jobs"
+    ],
+    "summary": "Get Job",
+    "operationId": "get_job_api_jobs__job_id__get",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Job Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/JobDetail"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/jobs/{job_id}/evaluate": {
+   "post": {
+    "tags": [
+     "jobs"
+    ],
+    "summary": "Evaluate Job",
+    "operationId": "evaluate_job_api_jobs__job_id__evaluate_post",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Job Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EvaluationOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/jobs/{job_id}/extract": {
+   "post": {
+    "tags": [
+     "jobs"
+    ],
+    "summary": "Extract Job Requirements",
+    "description": "Re-extract this job's requirements with the model now, instead of waiting for the worker.",
+    "operationId": "extract_job_requirements_api_jobs__job_id__extract_post",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Job Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/JobDetail"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/postings/{posting_id}/split": {
+   "post": {
+    "tags": [
+     "jobs"
+    ],
+    "summary": "Split Posting",
+    "operationId": "split_posting_api_postings__posting_id__split_post",
+    "parameters": [
+     {
+      "name": "posting_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Posting Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/JobDetail"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sources": {
+   "get": {
+    "tags": [
+     "sources"
+    ],
+    "summary": "List Sources",
+    "operationId": "list_sources_api_sources_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/SourceOut"
+         },
+         "title": "Response List Sources Api Sources Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "sources"
+    ],
+    "summary": "Add Source",
+    "operationId": "add_source_api_sources_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SourceIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SourceOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sources/{source_id}/poll": {
+   "post": {
+    "tags": [
+     "sources"
+    ],
+    "summary": "Poll Source",
+    "operationId": "poll_source_api_sources__source_id__poll_post",
+    "parameters": [
+     {
+      "name": "source_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Source Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/JobSummary"
+         },
+         "title": "Response Poll Source Api Sources  Source Id  Poll Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications": {
+   "get": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "List Applications",
+    "operationId": "list_applications_api_applications_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "$ref": "#/components/schemas/AppStatus"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ApplicationSummary"
+         },
+         "title": "Response List Applications Api Applications Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}": {
+   "get": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "Get Application",
+    "operationId": "get_application_api_applications__application_id__get",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApplicationDetail"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/jobs/{job_id}/application": {
+   "post": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "Shortlist",
+    "description": "The user picks a job by hand: create its application and shortlist it.",
+    "operationId": "shortlist_api_jobs__job_id__application_post",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Job Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApplicationOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}/transition": {
+   "post": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "Transition",
+    "operationId": "transition_api_applications__application_id__transition_post",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TransitionIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApplicationOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}/generate": {
+   "post": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "Generate",
+    "operationId": "generate_api_applications__application_id__generate_post",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GenerateIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DocumentOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}/documents/{kind}": {
+   "put": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "Save Document",
+    "description": "Save the user's edit as a new version (FR18). Rejected with 422 if any claim is unsupported.",
+    "operationId": "save_document_api_applications__application_id__documents__kind__put",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "kind",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "$ref": "#/components/schemas/DocumentKind"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DocumentIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DocumentOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}/approve": {
+   "post": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "Approve",
+    "operationId": "approve_api_applications__application_id__approve_post",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApproveIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApplicationOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}/packet": {
+   "get": {
+    "tags": [
+     "extension"
+    ],
+    "summary": "Get Packet",
+    "operationId": "get_packet_api_applications__application_id__packet_get",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PacketOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}/resume.pdf": {
+   "get": {
+    "tags": [
+     "extension"
+    ],
+    "summary": "Resume Pdf",
+    "description": "The tailored resume, rendered from the approved documents (FR21).",
+    "operationId": "resume_pdf_api_applications__application_id__resume_pdf_get",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}/answers.pdf": {
+   "get": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "Answers Pdf",
+    "description": "Answers sheet for sites the extension does not support: contact details, answers, cover letter.",
+    "operationId": "answers_pdf_api_applications__application_id__answers_pdf_get",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/extension/lookup": {
+   "get": {
+    "tags": [
+     "extension"
+    ],
+    "summary": "Extension Lookup",
+    "description": "Which application a job or application page belongs to. 404 if the job is not in job-copilot.",
+    "operationId": "extension_lookup_api_extension_lookup_get",
+    "parameters": [
+     {
+      "name": "url",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Url"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ExtensionLookup"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/applications/{application_id}/evidence": {
+   "post": {
+    "tags": [
+     "extension"
+    ],
+    "summary": "Add Evidence",
+    "description": "Submission attempts and confirmation pages from the extension; manual notes from the console.",
+    "operationId": "add_evidence_api_applications__application_id__evidence_post",
+    "parameters": [
+     {
+      "name": "application_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Application Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EvidenceIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EvidenceResult"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/queue": {
+   "get": {
+    "tags": [
+     "applications"
+    ],
+    "summary": "Manual Queue",
+    "operationId": "manual_queue_api_queue_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ApplicationSummary"
+         },
+         "title": "Response Manual Queue Api Queue Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/analytics/funnel": {
+   "get": {
+    "tags": [
+     "analytics"
+    ],
+    "summary": "Funnel",
+    "operationId": "funnel_api_analytics_funnel_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Funnel Api Analytics Funnel Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/inbox/status": {
+   "get": {
+    "tags": [
+     "inbox"
+    ],
+    "summary": "Inbox Status",
+    "operationId": "inbox_status_api_inbox_status_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InboxStatus"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/inbox/sync": {
+   "post": {
+    "tags": [
+     "inbox"
+    ],
+    "summary": "Sync Inbox Now",
+    "description": "Queue an inbox sync for the worker (it also runs every 15 minutes).",
+    "operationId": "sync_inbox_now_api_inbox_sync_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Sync Inbox Now Api Inbox Sync Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/inbox": {
+   "get": {
+    "tags": [
+     "inbox"
+    ],
+    "summary": "Inbox Queue",
+    "description": "Emails that need a decision: no matching application found, or not confident enough.",
+    "operationId": "inbox_queue_api_inbox_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/InboundMessageOut"
+         },
+         "title": "Response Inbox Queue Api Inbox Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/inbox/{message_id}/assign": {
+   "post": {
+    "tags": [
+     "inbox"
+    ],
+    "summary": "Assign Message",
+    "operationId": "assign_message_api_inbox__message_id__assign_post",
+    "parameters": [
+     {
+      "name": "message_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Message Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AssignIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApplicationOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/inbox/{message_id}/import": {
+   "post": {
+    "tags": [
+     "inbox"
+    ],
+    "summary": "Import Message",
+    "description": "Track an application made outside job-copilot, starting from its email.",
+    "operationId": "import_message_api_inbox__message_id__import_post",
+    "parameters": [
+     {
+      "name": "message_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Message Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ImportIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ApplicationOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/inbox/{message_id}/dismiss": {
+   "post": {
+    "tags": [
+     "inbox"
+    ],
+    "summary": "Dismiss Message",
+    "operationId": "dismiss_message_api_inbox__message_id__dismiss_post",
+    "parameters": [
+     {
+      "name": "message_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Message Id"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InboundMessageOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/status": {
+   "get": {
+    "tags": [
+     "settings"
+    ],
+    "summary": "Status",
+    "operationId": "status_api_status_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/StatusOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AnswerIn": {
+    "properties": {
+     "question": {
+      "type": "string",
+      "title": "Question"
+     },
+     "answer": {
+      "type": "string",
+      "title": "Answer"
+     }
+    },
+    "type": "object",
+    "required": [
+     "question",
+     "answer"
+    ],
+    "title": "AnswerIn"
+   },
+   "AnswerOut": {
+    "properties": {
+     "question_key": {
+      "type": "string",
+      "title": "Question Key"
+     },
+     "question": {
+      "type": "string",
+      "title": "Question"
+     },
+     "answer": {
+      "type": "string",
+      "title": "Answer"
+     },
+     "last_confirmed_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Last Confirmed At"
+     },
+     "stale": {
+      "type": "boolean",
+      "title": "Stale",
+      "default": false
+     }
+    },
+    "type": "object",
+    "required": [
+     "question_key",
+     "question",
+     "answer",
+     "last_confirmed_at"
+    ],
+    "title": "AnswerOut"
+   },
+   "AppStatus": {
+    "type": "string",
+    "enum": [
+     "discovered",
+     "rejected_by_rules",
+     "shortlisted",
+     "prepared",
+     "awaiting_approval",
+     "approved",
+     "submission_in_progress",
+     "submitted_unconfirmed",
+     "submission_confirmed",
+     "rejected",
+     "assessment",
+     "interview",
+     "offer",
+     "withdrawn",
+     "failed",
+     "needs_manual_intervention"
+    ],
+    "title": "AppStatus"
+   },
+   "ApplicationDetail": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Job Id"
+     },
+     "status": {
+      "type": "string",
+      "title": "Status"
+     },
+     "lock_version": {
+      "type": "integer",
+      "title": "Lock Version"
+     },
+     "submitted_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Submitted At"
+     },
+     "confirmed_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Confirmed At"
+     },
+     "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+     },
+     "job_title": {
+      "type": "string",
+      "title": "Job Title"
+     },
+     "company": {
+      "type": "string",
+      "title": "Company"
+     },
+     "score": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Score"
+     },
+     "job_url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Job Url"
+     },
+     "documents": {
+      "items": {
+       "$ref": "#/components/schemas/DocumentOut"
+      },
+      "type": "array",
+      "title": "Documents"
+     },
+     "history": {
+      "items": {
+       "$ref": "#/components/schemas/EventOut"
+      },
+      "type": "array",
+      "title": "History"
+     },
+     "evidence": {
+      "items": {
+       "$ref": "#/components/schemas/EvidenceOut"
+      },
+      "type": "array",
+      "title": "Evidence"
+     },
+     "allowed_targets": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Allowed Targets"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "job_id",
+     "status",
+     "lock_version",
+     "submitted_at",
+     "confirmed_at",
+     "updated_at",
+     "job_title",
+     "company",
+     "score",
+     "job_url",
+     "documents",
+     "history",
+     "evidence",
+     "allowed_targets"
+    ],
+    "title": "ApplicationDetail"
+   },
+   "ApplicationOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Job Id"
+     },
+     "status": {
+      "type": "string",
+      "title": "Status"
+     },
+     "lock_version": {
+      "type": "integer",
+      "title": "Lock Version"
+     },
+     "submitted_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Submitted At"
+     },
+     "confirmed_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Confirmed At"
+     },
+     "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "job_id",
+     "status",
+     "lock_version",
+     "submitted_at",
+     "confirmed_at",
+     "updated_at"
+    ],
+    "title": "ApplicationOut"
+   },
+   "ApplicationSummary": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "job_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Job Id"
+     },
+     "status": {
+      "type": "string",
+      "title": "Status"
+     },
+     "lock_version": {
+      "type": "integer",
+      "title": "Lock Version"
+     },
+     "submitted_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Submitted At"
+     },
+     "confirmed_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Confirmed At"
+     },
+     "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+     },
+     "job_title": {
+      "type": "string",
+      "title": "Job Title"
+     },
+     "company": {
+      "type": "string",
+      "title": "Company"
+     },
+     "score": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Score"
+     },
+     "job_url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Job Url"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "job_id",
+     "status",
+     "lock_version",
+     "submitted_at",
+     "confirmed_at",
+     "updated_at",
+     "job_title",
+     "company",
+     "score",
+     "job_url"
+    ],
+    "title": "ApplicationSummary"
+   },
+   "ApproveIn": {
+    "properties": {
+     "lock_version": {
+      "type": "integer",
+      "title": "Lock Version"
+     }
+    },
+    "type": "object",
+    "required": [
+     "lock_version"
+    ],
+    "title": "ApproveIn"
+   },
+   "AssignIn": {
+    "properties": {
+     "application_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Application Id"
+     },
+     "classification": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/MessageClass"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "application_id"
+    ],
+    "title": "AssignIn"
+   },
+   "ClaimDraft": {
+    "properties": {
+     "body": {
+      "type": "string",
+      "maxLength": 600,
+      "minLength": 1,
+      "title": "Body"
+     },
+     "fact_ids": {
+      "items": {
+       "type": "string",
+       "format": "uuid"
+      },
+      "type": "array",
+      "title": "Fact Ids"
+     }
+    },
+    "type": "object",
+    "required": [
+     "body",
+     "fact_ids"
+    ],
+    "title": "ClaimDraft",
+    "description": "The structured output we require from the model: claim text plus the facts it rests on."
+   },
+   "ClaimOut": {
+    "properties": {
+     "body": {
+      "type": "string",
+      "title": "Body"
+     },
+     "fact_ids": {
+      "items": {
+       "type": "string",
+       "format": "uuid"
+      },
+      "type": "array",
+      "title": "Fact Ids"
+     }
+    },
+    "type": "object",
+    "required": [
+     "body",
+     "fact_ids"
+    ],
+    "title": "ClaimOut"
+   },
+   "DocumentIn": {
+    "properties": {
+     "claims": {
+      "items": {
+       "$ref": "#/components/schemas/ClaimDraft"
+      },
+      "type": "array",
+      "maxItems": 40,
+      "minItems": 1,
+      "title": "Claims"
+     }
+    },
+    "type": "object",
+    "required": [
+     "claims"
+    ],
+    "title": "DocumentIn"
+   },
+   "DocumentKind": {
+    "type": "string",
+    "enum": [
+     "resume_bullets",
+     "summary",
+     "screening_answers",
+     "cover_letter"
+    ],
+    "title": "DocumentKind"
+   },
+   "DocumentOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "doc_version": {
+      "type": "integer",
+      "title": "Doc Version"
+     },
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "model": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Model"
+     },
+     "claims": {
+      "items": {
+       "$ref": "#/components/schemas/ClaimOut"
+      },
+      "type": "array",
+      "title": "Claims"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "kind",
+     "doc_version",
+     "state",
+     "model",
+     "claims"
+    ],
+    "title": "DocumentOut"
+   },
+   "EvaluationOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "score": {
+      "type": "integer",
+      "title": "Score"
+     },
+     "hard_filter_pass": {
+      "type": "boolean",
+      "title": "Hard Filter Pass"
+     },
+     "hard_filter_reasons": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Hard Filter Reasons"
+     },
+     "breakdown": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Breakdown"
+     },
+     "scorer_version": {
+      "type": "string",
+      "title": "Scorer Version"
+     },
+     "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "score",
+     "hard_filter_pass",
+     "hard_filter_reasons",
+     "breakdown",
+     "scorer_version",
+     "created_at"
+    ],
+    "title": "EvaluationOut"
+   },
+   "EventOut": {
+    "properties": {
+     "from_status": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "From Status"
+     },
+     "to_status": {
+      "type": "string",
+      "title": "To Status"
+     },
+     "actor": {
+      "type": "string",
+      "title": "Actor"
+     },
+     "evidence_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Evidence Id"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     },
+     "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "from_status",
+     "to_status",
+     "actor",
+     "evidence_id",
+     "note",
+     "created_at"
+    ],
+    "title": "EventOut"
+   },
+   "EvidenceIn": {
+    "properties": {
+     "kind": {
+      "$ref": "#/components/schemas/EvidenceKind"
+     },
+     "external_ref": {
+      "type": "string",
+      "maxLength": 500,
+      "minLength": 3,
+      "title": "External Ref"
+     },
+     "extracted": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Extracted",
+      "default": {}
+     },
+     "confidence": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "default": 1.0
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "external_ref"
+    ],
+    "title": "EvidenceIn"
+   },
+   "EvidenceKind": {
+    "type": "string",
+    "enum": [
+     "confirmation_page",
+     "confirmation_email",
+     "rejection_email",
+     "assessment_email",
+     "interview_email",
+     "offer_email",
+     "submission_attempt",
+     "manual_note"
+    ],
+    "title": "EvidenceKind"
+   },
+   "EvidenceOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "external_ref": {
+      "type": "string",
+      "title": "External Ref"
+     },
+     "extracted": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Extracted"
+     },
+     "confidence": {
+      "type": "number",
+      "title": "Confidence"
+     },
+     "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "kind",
+     "external_ref",
+     "extracted",
+     "confidence",
+     "created_at"
+    ],
+    "title": "EvidenceOut"
+   },
+   "EvidenceResult": {
+    "properties": {
+     "action": {
+      "type": "string",
+      "title": "Action"
+     },
+     "application": {
+      "$ref": "#/components/schemas/ApplicationOut"
+     }
+    },
+    "type": "object",
+    "required": [
+     "action",
+     "application"
+    ],
+    "title": "EvidenceResult"
+   },
+   "ExtensionLookup": {
+    "properties": {
+     "application": {
+      "$ref": "#/components/schemas/ApplicationSummary"
+     },
+     "adapter": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Adapter"
+     },
+     "packet_ready": {
+      "type": "boolean",
+      "title": "Packet Ready"
+     }
+    },
+    "type": "object",
+    "required": [
+     "application",
+     "adapter",
+     "packet_ready"
+    ],
+    "title": "ExtensionLookup",
+    "description": "What the extension needs on an application page: which application it is, and its state."
+   },
+   "FactIn": {
+    "properties": {
+     "kind": {
+      "$ref": "#/components/schemas/FactKind"
+     },
+     "statement": {
+      "type": "string",
+      "maxLength": 1000,
+      "minLength": 3,
+      "title": "Statement"
+     },
+     "details": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Details",
+      "default": {}
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "statement"
+    ],
+    "title": "FactIn"
+   },
+   "FactKind": {
+    "type": "string",
+    "enum": [
+     "skill",
+     "experience",
+     "role",
+     "project",
+     "achievement",
+     "education",
+     "certification",
+     "other"
+    ],
+    "title": "FactKind"
+   },
+   "FactOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "statement": {
+      "type": "string",
+      "title": "Statement"
+     },
+     "details": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Details"
+     },
+     "status": {
+      "type": "string",
+      "title": "Status"
+     },
+     "superseded_by": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Superseded By"
+     },
+     "verified_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Verified At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "kind",
+     "statement",
+     "details",
+     "status",
+     "superseded_by",
+     "verified_at"
+    ],
+    "title": "FactOut"
+   },
+   "FactRevision": {
+    "properties": {
+     "statement": {
+      "type": "string",
+      "maxLength": 1000,
+      "minLength": 3,
+      "title": "Statement"
+     },
+     "details": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Details"
+     }
+    },
+    "type": "object",
+    "required": [
+     "statement"
+    ],
+    "title": "FactRevision"
+   },
+   "FactStatus": {
+    "type": "string",
+    "enum": [
+     "proposed",
+     "verified",
+     "rejected",
+     "superseded"
+    ],
+    "title": "FactStatus"
+   },
+   "GenerateIn": {
+    "properties": {
+     "kind": {
+      "$ref": "#/components/schemas/DocumentKind",
+      "default": "resume_bullets"
+     }
+    },
+    "type": "object",
+    "title": "GenerateIn"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "ImportIn": {
+    "properties": {
+     "company": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Company"
+     },
+     "title": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title"
+     },
+     "location": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Location"
+     },
+     "classification": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/MessageClass"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "company",
+     "title"
+    ],
+    "title": "ImportIn",
+    "description": "An email about an application made outside job-copilot (e.g. Naukri NEO, LinkedIn Easy Apply)."
+   },
+   "InboundMessageOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "classification": {
+      "type": "string",
+      "title": "Classification"
+     },
+     "confidence": {
+      "type": "number",
+      "title": "Confidence"
+     },
+     "application_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Application Id"
+     },
+     "extracted": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Extracted"
+     },
+     "processed_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Processed At"
+     },
+     "resolved_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Resolved At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "classification",
+     "confidence",
+     "application_id",
+     "extracted",
+     "processed_at",
+     "resolved_at"
+    ],
+    "title": "InboundMessageOut"
+   },
+   "InboxStatus": {
+    "properties": {
+     "gmail_connected": {
+      "type": "boolean",
+      "title": "Gmail Connected"
+     },
+     "last_synced_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Synced At"
+     },
+     "unresolved": {
+      "type": "integer",
+      "title": "Unresolved"
+     }
+    },
+    "type": "object",
+    "required": [
+     "gmail_connected",
+     "last_synced_at",
+     "unresolved"
+    ],
+    "title": "InboxStatus"
+   },
+   "JobDetail": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "title": {
+      "type": "string",
+      "title": "Title"
+     },
+     "company": {
+      "type": "string",
+      "title": "Company"
+     },
+     "location": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Location"
+     },
+     "work_mode": {
+      "type": "string",
+      "title": "Work Mode"
+     },
+     "freshness": {
+      "type": "string",
+      "title": "Freshness"
+     },
+     "score": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Score"
+     },
+     "application_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Application Id"
+     },
+     "application_status": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Application Status"
+     },
+     "description": {
+      "type": "string",
+      "title": "Description"
+     },
+     "requirements": {
+      "items": {
+       "$ref": "#/components/schemas/RequirementOut"
+      },
+      "type": "array",
+      "title": "Requirements"
+     },
+     "evaluation": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EvaluationOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "matches": {
+      "items": {
+       "$ref": "#/components/schemas/MatchOut"
+      },
+      "type": "array",
+      "title": "Matches"
+     },
+     "postings": {
+      "items": {
+       "$ref": "#/components/schemas/PostingOut"
+      },
+      "type": "array",
+      "title": "Postings"
+     },
+     "extractor_version": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Extractor Version"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "title",
+     "company",
+     "location",
+     "work_mode",
+     "freshness",
+     "score",
+     "application_id",
+     "application_status",
+     "description",
+     "requirements",
+     "evaluation",
+     "matches",
+     "postings"
+    ],
+    "title": "JobDetail"
+   },
+   "JobSummary": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "title": {
+      "type": "string",
+      "title": "Title"
+     },
+     "company": {
+      "type": "string",
+      "title": "Company"
+     },
+     "location": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Location"
+     },
+     "work_mode": {
+      "type": "string",
+      "title": "Work Mode"
+     },
+     "freshness": {
+      "type": "string",
+      "title": "Freshness"
+     },
+     "score": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Score"
+     },
+     "application_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Application Id"
+     },
+     "application_status": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Application Status"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "title",
+     "company",
+     "location",
+     "work_mode",
+     "freshness",
+     "score",
+     "application_id",
+     "application_status"
+    ],
+    "title": "JobSummary"
+   },
+   "MatchOut": {
+    "properties": {
+     "requirement_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Requirement Id"
+     },
+     "fact_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fact Id"
+     },
+     "coverage": {
+      "type": "string",
+      "title": "Coverage"
+     },
+     "rationale": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rationale"
+     }
+    },
+    "type": "object",
+    "required": [
+     "requirement_id",
+     "fact_id",
+     "coverage",
+     "rationale"
+    ],
+    "title": "MatchOut",
+    "description": "Why a requirement is covered: the supporting fact, or a gap (fact_id null)."
+   },
+   "MessageClass": {
+    "type": "string",
+    "enum": [
+     "confirmation",
+     "rejection",
+     "interview",
+     "assessment",
+     "offer",
+     "job_alert",
+     "other"
+    ],
+    "title": "MessageClass"
+   },
+   "PacketOut": {
+    "properties": {
+     "application_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Application Id"
+     },
+     "job_title": {
+      "type": "string",
+      "title": "Job Title"
+     },
+     "company": {
+      "type": "string",
+      "title": "Company"
+     },
+     "documents": {
+      "additionalProperties": {
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      },
+      "type": "object",
+      "title": "Documents"
+     },
+     "answers": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Answers"
+     },
+     "stale_answers": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Stale Answers"
+     },
+     "questions": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Questions"
+     }
+    },
+    "type": "object",
+    "required": [
+     "application_id",
+     "job_title",
+     "company",
+     "documents",
+     "answers",
+     "stale_answers",
+     "questions"
+    ],
+    "title": "PacketOut"
+   },
+   "PastedJobIn": {
+    "properties": {
+     "title": {
+      "type": "string",
+      "minLength": 2,
+      "title": "Title"
+     },
+     "company": {
+      "type": "string",
+      "minLength": 1,
+      "title": "Company"
+     },
+     "description": {
+      "type": "string",
+      "minLength": 20,
+      "title": "Description"
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     },
+     "location": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Location"
+     },
+     "work_mode": {
+      "$ref": "#/components/schemas/WorkMode",
+      "default": "unknown"
+     },
+     "salary_min": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Salary Min"
+     },
+     "salary_max": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Salary Max"
+     }
+    },
+    "type": "object",
+    "required": [
+     "title",
+     "company",
+     "description"
+    ],
+    "title": "PastedJobIn"
+   },
+   "PostingOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "source_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Source Id"
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     },
+     "merge_confidence": {
+      "type": "number",
+      "title": "Merge Confidence"
+     },
+     "fetched_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Fetched At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "source_id",
+     "url",
+     "merge_confidence",
+     "fetched_at"
+    ],
+    "title": "PostingOut"
+   },
+   "Preferences": {
+    "properties": {
+     "locations": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Locations",
+      "default": []
+     },
+     "work_modes": {
+      "items": {
+       "$ref": "#/components/schemas/WorkMode"
+      },
+      "type": "array",
+      "title": "Work Modes",
+      "default": []
+     },
+     "min_salary": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min Salary"
+     },
+     "excluded_companies": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Excluded Companies",
+      "default": []
+     },
+     "title_include": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Title Include",
+      "default": []
+     },
+     "title_exclude": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Title Exclude",
+      "default": []
+     },
+     "shortlist_score": {
+      "type": "integer",
+      "title": "Shortlist Score",
+      "default": 60
+     }
+    },
+    "type": "object",
+    "title": "Preferences",
+    "description": "Stored in users.preferences. Empty lists mean \"no constraint\"."
+   },
+   "RequirementOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "statement": {
+      "type": "string",
+      "title": "Statement"
+     },
+     "importance": {
+      "type": "string",
+      "title": "Importance"
+     },
+     "terms": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Terms"
+     },
+     "min_years": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min Years"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "statement",
+     "importance",
+     "terms",
+     "min_years"
+    ],
+    "title": "RequirementOut"
+   },
+   "ResumeIn": {
+    "properties": {
+     "text": {
+      "type": "string",
+      "maxLength": 100000,
+      "minLength": 20,
+      "title": "Text"
+     },
+     "file_name": {
+      "type": "string",
+      "title": "File Name",
+      "default": "resume.txt"
+     }
+    },
+    "type": "object",
+    "required": [
+     "text"
+    ],
+    "title": "ResumeIn"
+   },
+   "SourceIn": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "pattern": "^(greenhouse|lever)$",
+      "title": "Kind"
+     },
+     "config": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Config"
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "config"
+    ],
+    "title": "SourceIn"
+   },
+   "SourceOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "config": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Config"
+     },
+     "access_basis": {
+      "type": "string",
+      "title": "Access Basis"
+     },
+     "health": {
+      "type": "string",
+      "title": "Health"
+     },
+     "last_polled_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Polled At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "kind",
+     "config",
+     "access_basis",
+     "health",
+     "last_polled_at"
+    ],
+    "title": "SourceOut"
+   },
+   "StatusOut": {
+    "properties": {
+     "llm_provider": {
+      "type": "string",
+      "title": "Llm Provider"
+     },
+     "llm_model": {
+      "type": "string",
+      "title": "Llm Model"
+     },
+     "requirement_extractor": {
+      "type": "string",
+      "title": "Requirement Extractor"
+     },
+     "extraction_provider": {
+      "type": "string",
+      "title": "Extraction Provider"
+     },
+     "gmail_connected": {
+      "type": "boolean",
+      "title": "Gmail Connected"
+     },
+     "contact_fields": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Contact Fields"
+     }
+    },
+    "type": "object",
+    "required": [
+     "llm_provider",
+     "llm_model",
+     "requirement_extractor",
+     "extraction_provider",
+     "gmail_connected",
+     "contact_fields"
+    ],
+    "title": "StatusOut"
+   },
+   "TransitionIn": {
+    "properties": {
+     "target": {
+      "$ref": "#/components/schemas/AppStatus"
+     },
+     "lock_version": {
+      "type": "integer",
+      "title": "Lock Version"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "target",
+     "lock_version"
+    ],
+    "title": "TransitionIn"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "WorkMode": {
+    "type": "string",
+    "enum": [
+     "onsite",
+     "hybrid",
+     "remote",
+     "unknown"
+    ],
+    "title": "WorkMode"
+   }
+  }
+ }
+}

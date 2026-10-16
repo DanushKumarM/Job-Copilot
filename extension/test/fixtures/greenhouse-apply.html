@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- Hand-written to the shape of a job-boards.greenhouse.io application form; not a saved live page. -->
+<html lang="en">
+<head><meta charset="utf-8"><title>Job Application for Backend Engineer at Acme</title></head>
+<body>
+<main class="job-post">
+  <h1 class="section-header">Backend Engineer</h1>
+  <form id="application-form" class="application--form" novalidate>
+    <div class="field-wrapper"><label for="first_name" class="label">First Name<span class="required">*</span></label>
+      <input id="first_name" class="input" type="text" aria-required="true" autocomplete="given-name"></div>
+    <div class="field-wrapper"><label for="last_name" class="label">Last Name<span class="required">*</span></label>
+      <input id="last_name" class="input" type="text" aria-required="true" autocomplete="family-name"></div>
+    <div class="field-wrapper"><label for="email" class="label">Email<span class="required">*</span></label>
+      <input id="email" class="input" type="text" aria-required="true"></div>
+    <div class="field-wrapper"><label for="phone" class="label">Phone</label>
+      <input id="phone" class="input" type="tel"></div>
+    <div class="field-wrapper"><label for="candidate-location" class="label">Location (City)<span class="required">*</span></label>
+      <input id="candidate-location" class="input" type="text" role="combobox" aria-autocomplete="list" aria-required="true"></div>
+    <div class="file-upload"><div id="upload-label-resume" class="label">Resume/CV<span class="required">*</span></div>
+      <input id="resume" type="file" class="visually-hidden" accept=".pdf,.doc,.docx,.txt,.rtf" aria-required="true" aria-labelledby="upload-label-resume"></div>
+    <div class="file-upload"><div id="upload-label-cover" class="label">Cover Letter</div>
+      <input id="cover_letter" type="file" class="visually-hidden" aria-labelledby="upload-label-cover"></div>
+    <div class="field-wrapper"><label for="question_101" class="label">LinkedIn Profile</label>
+      <input id="question_101" class="input" type="text"></div>
+    <div class="field-wrapper"><label for="question_102" class="label">Website</label>
+      <input id="question_102" class="input" type="text"></div>
+    <div class="field-wrapper"><label for="question_103" class="label">What is your notice period?<span class="required">*</span></label>
+      <input id="question_103" class="input" type="text" aria-required="true"></div>
+    <div class="field-wrapper"><label for="question_104" class="label">Are you legally authorized to work in India?<span class="required">*</span></label>
+      <select id="question_104" aria-required="true"><option value="">Select...</option><option value="1">Yes</option><option value="0">No</option></select></div>
+    <div class="field-wrapper"><label for="question_105" class="label">Will you now or in the future require visa sponsorship to work in India?<span class="required">*</span></label>
+      <select id="question_105" aria-required="true"><option value="">Select...</option><option value="1">Yes</option><option value="0">No</option></select></div>
+    <div class="field-wrapper"><label for="question_106" class="label">Why do you want to work at Acme?<span class="required">*</span></label>
+      <textarea id="question_106" aria-required="true"></textarea></div>
+    <fieldset class="field-wrapper"><legend>Privacy</legend>
+      <label><input type="checkbox" id="gdpr" name="gdpr" required> I agree to the processing of my data<span class="required">*</span></label></fieldset>
+    <button type="submit" class="btn btn--pill">Submit application</button>
+  </form>
+</main>
+<script>
+  // Like the real form: a client-side submit that swaps in the confirmation without a page load.
+  document.getElementById("application-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    setTimeout(function () {
+      history.pushState({}, "", location.pathname.replace(/\/$/, "") + "/confirmation");
+      document.querySelector("main").innerHTML =
+        '<div class="application-confirmation"><h1>Thank you for applying.</h1><p>Your application has been received. We will review it shortly.</p></div>';
+    }, 200);
+  });
+</script>
+</body>
+</html>

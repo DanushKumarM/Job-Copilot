@@ -1,0 +1,16 @@
+[
+  {
+    "id": "8f1c2b7e-0000-4a5b-9c1d-acme00000001",
+    "text": "Backend Engineer",
+    "hostedUrl": "https://jobs.lever.co/acme/8f1c2b7e-0000-4a5b-9c1d-acme00000001",
+    "workplaceType": "hybrid",
+    "categories": {"location": "Bengaluru", "commitment": "Full-time", "team": "Payments"},
+    "descriptionPlain": "We build payments infrastructure.",
+    "lists": [
+      {"text": "Requirements", "content": "<li>3+ years of professional software development experience</li><li>Strong Python</li><li>Experience with PostgreSQL and REST APIs</li>"},
+      {"text": "Nice to have", "content": "<li>Kafka</li>"}
+    ],
+    "additionalPlain": "",
+    "salaryRange": {"currency": "INR", "interval": "per-year-salary", "min": 2500000, "max": 3500000}
+  }
+]

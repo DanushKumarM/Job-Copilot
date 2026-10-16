@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- Hand-written to the shape of a jobs.lever.co/<site>/<id>/apply form; not a saved live page. -->
+<html lang="en">
+<head><meta charset="utf-8"><title>Acme - Backend Engineer</title></head>
+<body>
+<div class="content">
+  <h2 class="posting-headline">Backend Engineer</h2>
+  <form id="application-form" class="application-form" method="POST" action="/acme/8f1c2b7e-0000-4a5b-9c1d-acme00000001/thanks" enctype="multipart/form-data">
+    <ul>
+      <li class="application-question resume"><div class="application-label">Resume/CV<span class="required">&#10033;</span></div>
+        <div class="application-field"><input type="file" name="resume" id="resume-upload-input" required></div></li>
+      <li class="application-question"><div class="application-label">Full name<span class="required">&#10033;</span></div>
+        <div class="application-field"><input type="text" name="name" required></div></li>
+      <li class="application-question"><div class="application-label">Email<span class="required">&#10033;</span></div>
+        <div class="application-field"><input type="email" name="email" required></div></li>
+      <li class="application-question"><div class="application-label">Phone</div>
+        <div class="application-field"><input type="text" name="phone"></div></li>
+      <li class="application-question"><div class="application-label">Current company</div>
+        <div class="application-field"><input type="text" name="org"></div></li>
+      <li class="application-question"><div class="application-label">Current location</div>
+        <div class="application-field"><input type="text" name="location"></div></li>
+      <li class="application-question"><div class="application-label">LinkedIn URL</div>
+        <div class="application-field"><input type="text" name="urls[LinkedIn]"></div></li>
+      <li class="application-question"><div class="application-label">GitHub URL</div>
+        <div class="application-field"><input type="text" name="urls[GitHub]"></div></li>
+      <li class="application-question"><div class="application-label">Portfolio URL</div>
+        <div class="application-field"><input type="text" name="urls[Portfolio]"></div></li>
+      <li class="application-question custom-question"><div class="application-label"><div class="text">What are your salary expectations (expected CTC)?<span class="required">&#10033;</span></div></div>
+        <div class="application-field"><input type="text" name="cards[c1][field0]" required></div></li>
+      <li class="application-question custom-question"><div class="application-label"><div class="text">Have you worked with Kafka in production?<span class="required">&#10033;</span></div></div>
+        <div class="application-field"><textarea name="cards[c1][field1]" required></textarea></div></li>
+      <li class="application-question"><div class="application-label">Additional information</div>
+        <div class="application-field"><textarea name="comments" placeholder="Add a cover letter or anything else you want to share."></textarea></div></li>
+    </ul>
+    <button type="submit" class="template-btn-submit">Submit application</button>
+  </form>
+</div>
+</body>
+</html>

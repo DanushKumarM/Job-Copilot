@@ -1,0 +1,22 @@
+{
+  "jobs": [
+    {
+      "id": 4012345,
+      "title": "Backend Engineer",
+      "absolute_url": "https://boards.greenhouse.io/acme/jobs/4012345",
+      "updated_at": "2026-10-01T10:00:00-04:00",
+      "location": {"name": "Bengaluru, Karnataka (Hybrid)"},
+      "company_name": "Acme Technologies Pvt Ltd",
+      "content": "&lt;p&gt;We build payments infrastructure.&lt;/p&gt;&lt;h3&gt;Requirements&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;3+ years of professional software development experience&lt;/li&gt;&lt;li&gt;Strong Python&lt;/li&gt;&lt;li&gt;Experience with PostgreSQL and REST APIs&lt;/li&gt;&lt;/ul&gt;&lt;h3&gt;Nice to have&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;Kafka&lt;/li&gt;&lt;/ul&gt;"
+    },
+    {
+      "id": 4012399,
+      "title": "Senior Frontend Engineer",
+      "absolute_url": "https://boards.greenhouse.io/acme/jobs/4012399",
+      "updated_at": "2026-10-02T10:00:00-04:00",
+      "location": {"name": "Remote - India"},
+      "company_name": "Acme Technologies Pvt Ltd",
+      "content": "&lt;h3&gt;Requirements&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;React and TypeScript&lt;/li&gt;&lt;/ul&gt;"
+    }
+  ]
+}

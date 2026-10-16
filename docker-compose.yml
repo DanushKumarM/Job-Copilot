@@ -1,0 +1,34 @@
+# Same image locally and on Azure Container Apps (NFR7). Not required for development on Windows:
+# scripts/dev-db.ps1 runs PostgreSQL directly.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jobcopilot
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+
+  api:
+    build: { context: ., dockerfile: backend/Dockerfile }
+    env_file: ./backend/.env
+    environment:
+      JOBCOPILOT_DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/jobcopilot
+      JOBCOPILOT_OLLAMA_URL: http://host.docker.internal:11434
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: [files:/data/files]
+    depends_on: [db]
+
+  worker:
+    build: { context: ., dockerfile: backend/Dockerfile }
+    command: ["jobcopilot", "worker"]
+    env_file: ./backend/.env
+    environment:
+      JOBCOPILOT_DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/jobcopilot
+      JOBCOPILOT_OLLAMA_URL: http://host.docker.internal:11434
+    volumes: [files:/data/files]
+    depends_on: [api]  # the api container applies migrations on start
+
+volumes:
+  pgdata:
+  files:

@@ -1,0 +1,42 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}[\titlerule]
+
+\begin{document}
+
+{\LARGE\bfseries {{ full_name }}}
+
+{{ contact_line }}
+
+\section*{Summary}
+{{ summary }}
+
+\section*{Highlights}
+\begin{itemize}[leftmargin=*,nosep]
+{{ highlights }}
+\end{itemize}
+
+\section*{Experience}
+\begin{itemize}[leftmargin=*,nosep]
+{{ experience }}
+\end{itemize}
+
+\section*{Skills}
+{{ skills }}
+
+\section*{Education}
+\begin{itemize}[leftmargin=*,nosep]
+{{ education }}
+\end{itemize}
+
+\section*{Certifications}
+\begin{itemize}[leftmargin=*,nosep]
+{{ certifications }}
+\end{itemize}
+
+\end{document}
