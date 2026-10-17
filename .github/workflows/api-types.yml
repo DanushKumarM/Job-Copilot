@@ -1,0 +1,34 @@
+name: API type drift check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check-api-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install backend dependencies
+        run: pip install -e backend/
+
+      - name: Export OpenAPI schema
+        run: python -m jobcopilot.cli openapi shared/openapi.json
+
+      - name: Generate TypeScript types
+        run: npx openapi-typescript@7 shared/openapi.json -o shared/api.d.ts
+
+      - name: Verify no schema drift
+        run: git diff --exit-code shared/

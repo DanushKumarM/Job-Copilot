@@ -79,6 +79,8 @@ async function handle(message: ToBackground, sender: chrome.runtime.MessageSende
       return tabId === undefined ? null : onConfirmation(tabId, message.url, message.heading, message.hash);
     case "session":
       return tabId === undefined ? null : getSession(tabId);
+    case "prepare-questions":
+      return api.prepareQuestions(message.applicationId, message.questions);
   }
 }
 

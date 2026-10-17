@@ -78,6 +78,10 @@ export const api = {
   },
   evidence: (id: string, kind: "submission_attempt" | "confirmation_page", externalRef: string, extracted: object) =>
     json<{ action: string }>("POST", `/applications/${id}/evidence`, { kind, external_ref: externalRef, extracted }),
+  prepareQuestions: (id: string, questions: string[]) =>
+    json<{ answers: { question: string; answer: string }[] }>("POST", `/applications/${id}/prepare-questions`, {
+      questions,
+    }),
 };
 
 function toBase64(bytes: Uint8Array): string {
