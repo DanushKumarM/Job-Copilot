@@ -81,3 +81,30 @@ def test_falls_back_to_a_core_font_without_truetype(session, user, monkeypatch):
     monkeypatch.setattr(render, "_FONT_CANDIDATES", [])
     text = text_of(render.render_resume(session, app))
     assert "Backend engineer - 4 years" in text
+
+
+def test_resume_overflow_guard_guarantees_single_page(session, user):  # noqa: F811
+    app = prepared(session, user)
+    facts = {f.statement: f.id for f in profile.list_facts(session, user.id)}
+    billing = next(i for s, i in facts.items() if "billing" in s)
+
+    # Inundate with 15 bulky bullets that would ordinarily overflow to 2-3 pages
+    long_bullets = [
+        ClaimDraft(
+            body=f"High scale billing component #{i}: engineered fault-tolerant distributed transaction handlers processing large scale transaction volume with asynchronous retry policies",
+            fact_ids=[billing],
+        )
+        for i in range(1, 16)
+    ]
+    generation.save_version(
+        session,
+        app,
+        DocumentKind.RESUME_BULLETS,
+        DocumentDraft(claims=long_bullets),
+        Actor.USER,
+    )
+    generation.approve(session, app, app.lock_version)
+
+    path = render.render_resume(session, app)
+    reader = PdfReader(path)
+    assert len(reader.pages) == 1, f"Expected strictly 1 page, got {len(reader.pages)}"

@@ -10,7 +10,7 @@ from jobcopilot.enums import Actor, AppStatus, Coverage, DocumentKind, DocumentS
 from jobcopilot.errors import DomainError, ValidationFailed
 from jobcopilot.generation import prompts
 from jobcopilot.generation.models import Claim, ClaimEvidence, GeneratedDocument
-from jobcopilot.generation.validator import ClaimDraft, DocumentDraft, validate_claims
+from jobcopilot.generation.validator import ClaimDraft, DocumentDraft, ScreeningDraft, validate_claims
 from jobcopilot.ingestion.models import Company, Job
 from jobcopilot.lifecycle import service as lifecycle
 from jobcopilot.lifecycle.models import Application
@@ -157,6 +157,43 @@ def generate(session: Session, provider: LLMProvider, app: Application, kind: Do
     note = f"generation failed validation {MAX_GENERATION_ATTEMPTS} times: " + "; ".join(issues)[:900]
     lifecycle.transition(session, app, AppStatus.NEEDS_MANUAL_INTERVENTION, Actor.SYSTEM, note=note)
     raise ValidationFailed(issues)
+
+
+def prepare_screening_answers(
+    session: Session, provider: LLMProvider, app: Application, questions: list[str]
+) -> list[dict[str, str]]:
+    """Draft answers for arbitrary custom screening questions, grounded in verified facts."""
+    if not questions:
+        return []
+    job = session.get(Job, app.job_id)
+    company = session.get(Company, job.company_id)
+    facts = list_facts(session, app.user_id, [FactStatus.VERIFIED])
+    if not facts:
+        raise DomainError("no verified facts yet; verify your profile first")
+
+    requirements = requirement_views(session, job.id)
+    prompt = prompts.build_screening_prompt(
+        job.title,
+        company.name,
+        [(str(r.importance), r.statement) for r in requirements],
+        [(str(f.id), f.statement) for f in facts],
+        questions,
+    )
+    draft, error = call_structured(
+        session,
+        provider,
+        ScreeningDraft,
+        purpose="generate.screening_questions",
+        prompt_version=prompts.PROMPT_VERSION,
+        system=prompts.SCREENING_SYSTEM,
+        prompt=prompt,
+        contains_personal_data=True,
+        user_id=app.user_id,
+        application_id=app.id,
+    )
+    if draft is None:
+        raise DomainError(error or "failed to draft screening answers")
+    return [{"question": a.question, "answer": a.answer} for a in draft.answers]
 
 
 def approve(session: Session, app: Application, expected_lock_version: int) -> Application:

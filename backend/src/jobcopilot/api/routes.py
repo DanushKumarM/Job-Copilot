@@ -411,6 +411,21 @@ def generate(application_id: uuid.UUID, body: s.GenerateIn, session: SessionDep,
     return next(d for d in _documents(session, app.id) if d["id"] == doc.id)
 
 
+@router.post(
+    "/applications/{application_id}/prepare-questions",
+    response_model=s.PrepareQuestionsOut,
+    tags=["extension", "applications"],
+)
+def prepare_questions(
+    application_id: uuid.UUID, body: s.PrepareQuestionsIn, session: SessionDep, user: UserDep, llm: LLMDep
+):
+    """Draft grounded answers for custom screening questions scraped by the extension."""
+    app = lifecycle.get_application(session, user.id, application_id)
+    answers = generation.prepare_screening_answers(session, llm, app, body.questions)
+    session.commit()
+    return {"answers": answers}
+
+
 @router.put("/applications/{application_id}/documents/{kind}", response_model=s.DocumentOut, tags=["applications"])
 def save_document(
     application_id: uuid.UUID, kind: DocumentKind, body: s.DocumentIn, session: SessionDep, user: UserDep

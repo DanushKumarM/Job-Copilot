@@ -37,3 +37,28 @@ def build_prompt(
         lines += ["", "Your previous attempt was rejected by the validator. Fix these problems:"]
         lines += [f"- {issue}" for issue in previous_issues]
     return "\n".join(lines)
+
+
+SCREENING_SYSTEM = """You answer screening questions for a job application.
+Hard rules:
+- Ground every answer in the candidate's verified facts.
+- Never invent skills, numbers, or experiences not supported by the facts.
+- Keep each answer to 2-3 sentences, direct, professional, and relevant to the question.
+- If no fact supports an answer, state honestly that you do not have direct experience with that specific requirement.
+Return JSON matching the schema."""
+
+
+def build_screening_prompt(
+    job_title: str,
+    company: str,
+    requirements: list[tuple[str, str]],
+    facts: list[tuple[str, str]],
+    questions: list[str],
+) -> str:
+    lines = [f"Job: {job_title} at {company}", "", "Requirements (importance: statement):"]
+    lines += [f"- {importance}: {statement}" for importance, statement in requirements]
+    lines += ["", "Verified facts (id: statement):"] + [f"- {fid}: {statement}" for fid, statement in facts]
+    lines += ["", "Screening questions to answer:"]
+    lines += [f"- {q}" for q in questions]
+    lines += ["", "Task: Provide a concise, 2-3 sentence fact-grounded answer for each question."]
+    return "\n".join(lines)

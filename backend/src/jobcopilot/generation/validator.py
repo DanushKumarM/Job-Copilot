@@ -25,6 +25,15 @@ class DocumentDraft(BaseModel):
     claims: list[ClaimDraft] = Field(min_length=1, max_length=40)
 
 
+class ScreeningAnswer(BaseModel):
+    question: str
+    answer: str = Field(max_length=1000)
+
+
+class ScreeningDraft(BaseModel):
+    answers: list[ScreeningAnswer]
+
+
 @dataclass(frozen=True)
 class FactView:
     id: uuid.UUID

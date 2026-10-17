@@ -56,6 +56,13 @@ def write_openapi(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_evals(_: argparse.Namespace) -> int:
+    """Run the hallucination evaluation benchmark harness."""
+    from jobcopilot.evals.runner import main as evals_main
+
+    return evals_main()
+
+
 def run_worker(_: argparse.Namespace) -> int:
     from jobcopilot import worker
 
@@ -79,6 +86,7 @@ def main(argv: list[str] | None = None) -> int:
     commands.add_parser("worker", help="run the background worker").set_defaults(func=run_worker)
     commands.add_parser("gmail-auth", help="connect Gmail (read-only)").set_defaults(func=gmail_auth)
     commands.add_parser("gmail-revoke", help="forget the Gmail token").set_defaults(func=gmail_revoke)
+    commands.add_parser("evals", help="run the hallucination evaluation benchmark").set_defaults(func=run_evals)
     run = commands.add_parser("run", help="run one task now, in this process")
     run.add_argument("task", choices=["sync-inbox", "poll-boards", "mark-stale", "rescore", "refine-requirements"])
     run.set_defaults(func=run_now)

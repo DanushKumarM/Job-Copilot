@@ -51,10 +51,17 @@ _ASCII = str.maketrans(
 
 
 class _Doc(FPDF):
-    def __init__(self, title: str, author: str | None):
+    def __init__(
+        self,
+        title: str,
+        author: str | None,
+        margins: tuple[float, float, float] = (18, 16, 18),
+        compact: bool = False,
+    ):
         super().__init__(format="A4")
-        self.set_margins(18, 16, 18)
-        self.set_auto_page_break(True, margin=16)
+        self.compact = compact
+        self.set_margins(*margins)
+        self.set_auto_page_break(True, margin=margins[1])
         self.set_title(title)
         self.set_creator("job-copilot")
         if author:
@@ -67,6 +74,10 @@ class _Doc(FPDF):
             self._family, self._unicode = "body", True
         self.add_page()
 
+    @property
+    def page_count(self) -> int:
+        return len(self.pages)
+
     def clean(self, text: str) -> str:
         text = " ".join(text.split())
         if self._unicode:
@@ -78,27 +89,31 @@ class _Doc(FPDF):
 
     def heading(self, text: str, size: float = 18) -> None:
         self.font(size, bold=True)
-        self.multi_cell(0, size * 0.5, self.clean(text), new_x="LMARGIN", new_y="NEXT")
+        gap = size * 0.45 if self.compact else size * 0.5
+        self.multi_cell(0, gap, self.clean(text), new_x="LMARGIN", new_y="NEXT")
 
-    def line_text(self, text: str, size: float = 10, bold: bool = False, gap: float = 5) -> None:
+    def line_text(self, text: str, size: float = 10, bold: bool = False, gap: float | None = None) -> None:
         self.font(size, bold)
+        if gap is None:
+            gap = 4.2 if self.compact else 5.0
         self.multi_cell(0, gap, self.clean(text), new_x="LMARGIN", new_y="NEXT")
 
     def section(self, title: str) -> None:
-        self.ln(3)
-        self.font(11, bold=True)
-        self.cell(0, 6, self.clean(title.upper()), new_x="LMARGIN", new_y="NEXT")
+        self.ln(1.8 if self.compact else 3.0)
+        self.font(10.5 if self.compact else 11.0, bold=True)
+        self.cell(0, 5 if self.compact else 6, self.clean(title.upper()), new_x="LMARGIN", new_y="NEXT")
         y = self.get_y()
         self.set_draw_color(160, 160, 160)
         self.line(self.l_margin, y, self.w - self.r_margin, y)
-        self.ln(1.5)
+        self.ln(1.0 if self.compact else 1.5)
 
     def bullet(self, text: str) -> None:
-        self.font(10)
+        self.font(9.5 if self.compact else 10.0)
         self.set_x(self.l_margin + 1)
-        self.cell(4, 5, self.clean("\u2022"))
-        self.multi_cell(0, 5, self.clean(text), new_x="LMARGIN", new_y="NEXT")
-        self.ln(0.6)
+        cell_gap = 4.2 if self.compact else 5.0
+        self.cell(4, cell_gap, self.clean("\u2022"))
+        self.multi_cell(0, cell_gap, self.clean(text), new_x="LMARGIN", new_y="NEXT")
+        self.ln(0.3 if self.compact else 0.6)
 
 
 def _font_files() -> tuple[Path | None, Path | None]:
@@ -148,32 +163,29 @@ def _output_dir(application_id: uuid.UUID) -> Path:
     return path
 
 
-def render_resume(session: Session, app: Application) -> Path:
-    ctx = _context(session, app)
-    bullets = ctx.claims(DocumentKind.RESUME_BULLETS)
-    if not bullets:
-        raise DomainError("approve resume bullets before rendering a resume")
+def _build_resume_pdf(
+    ctx: _Context,
+    facts: list,
+    bullets: list[str],
+    compact: bool = False,
+) -> _Doc:
     contact = ctx.contact
-    facts = list_facts(session, app.user_id, [FactStatus.VERIFIED])
-
-    template = get_settings().latex_template
-    if template:
-        version = ctx.docs[DocumentKind.RESUME_BULLETS].doc_version
-        path = render_latex_resume(ctx, facts, bullets, template, version)
-        ctx.docs[DocumentKind.RESUME_BULLETS].rendered_path = str(path)
-        session.flush()
-        return path
-
-    pdf = _Doc(f"{contact.get('full_name', 'Resume')} - {ctx.job.title}", contact.get("full_name"))
+    margins = (14, 11, 14) if compact else (18, 16, 18)
+    pdf = _Doc(
+        f"{contact.get('full_name', 'Resume')} - {ctx.job.title}",
+        contact.get("full_name"),
+        margins=margins,
+        compact=compact,
+    )
     if "full_name" in contact:
-        pdf.heading(contact["full_name"])
+        pdf.heading(contact["full_name"], size=16 if compact else 18)
     details = [contact[k] for k in ("email", "phone", "location", "linkedin", "github", "website") if k in contact]
     if details:
-        pdf.line_text("  |  ".join(details), size=9.5)
+        pdf.line_text("  |  ".join(details), size=9.0 if compact else 9.5)
 
     if summary := ctx.claims(DocumentKind.SUMMARY):
         pdf.section("Summary")
-        pdf.line_text(" ".join(summary))
+        pdf.line_text(" ".join(summary), size=9.5 if compact else 10.0)
 
     pdf.section("Highlights")
     for claim in bullets:
@@ -193,7 +205,7 @@ def render_resume(session: Session, app: Application) -> Path:
                     skills.setdefault(display_term(skill.strip()), None)
     if skills:
         pdf.section("Skills")
-        pdf.line_text(", ".join(skills))
+        pdf.line_text(", ".join(skills), size=9.5 if compact else 10.0)
 
     for kind, title in ((FactKind.EDUCATION, "Education"), (FactKind.CERTIFICATION, "Certifications")):
         statements = [f.statement for f in facts if f.kind == kind]
@@ -201,6 +213,38 @@ def render_resume(session: Session, app: Application) -> Path:
             pdf.section(title)
             for statement in statements:
                 pdf.bullet(statement)
+
+    return pdf
+
+
+def render_resume(session: Session, app: Application) -> Path:
+    ctx = _context(session, app)
+    bullets = ctx.claims(DocumentKind.RESUME_BULLETS)
+    if not bullets:
+        raise DomainError("approve resume bullets before rendering a resume")
+    contact = ctx.contact
+    facts = list_facts(session, app.user_id, [FactStatus.VERIFIED])
+
+    template = get_settings().latex_template
+    if template:
+        version = ctx.docs[DocumentKind.RESUME_BULLETS].doc_version
+        path = render_latex_resume(ctx, facts, bullets, template, version)
+        ctx.docs[DocumentKind.RESUME_BULLETS].rendered_path = str(path)
+        session.flush()
+        return path
+
+    # Pass 1: Standard layout
+    pdf = _build_resume_pdf(ctx, facts, bullets, compact=False)
+
+    # Pass 2: If overflow (> 1 page), try compact styling (tighter margins and line spacing)
+    if pdf.page_count > 1:
+        pdf = _build_resume_pdf(ctx, facts, bullets, compact=True)
+
+    # Pass 3: If still overflowing, trim lowest-priority (last) bullets until 1 page or at least 2 bullets remain
+    current_bullets = list(bullets)
+    while pdf.page_count > 1 and len(current_bullets) > 2:
+        current_bullets.pop()
+        pdf = _build_resume_pdf(ctx, facts, current_bullets, compact=True)
 
     version = ctx.docs[DocumentKind.RESUME_BULLETS].doc_version
     path = _output_dir(app.id) / f"resume-v{version}.pdf"

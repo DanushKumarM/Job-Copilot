@@ -299,3 +299,16 @@ class ImportIn(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     location: str | None = None
     classification: MessageClass | None = None
+
+
+class PrepareQuestionsIn(BaseModel):
+    questions: list[str] = Field(min_length=1, max_length=15)
+
+
+class PreparedAnswer(BaseModel):
+    question: str
+    answer: str
+
+
+class PrepareQuestionsOut(BaseModel):
+    answers: list[PreparedAnswer]

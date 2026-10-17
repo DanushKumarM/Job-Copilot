@@ -4,6 +4,74 @@
  */
 
 export interface paths {
+    "/api/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register */
+        post: operations["register_api_auth_register_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login */
+        post: operations["login_api_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout */
+        post: operations["logout_api_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me_api_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/profile/resume": {
         parameters: {
             query?: never;
@@ -351,6 +419,26 @@ export interface paths {
         put?: never;
         /** Generate */
         post: operations["generate_api_applications__application_id__generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/applications/{application_id}/prepare-questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Prepare Questions
+         * @description Draft grounded answers for custom screening questions scraped by the extension.
+         */
+        post: operations["prepare_questions_api_applications__application_id__prepare_questions_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -804,6 +892,10 @@ export interface components {
             application_id: string;
             classification?: components["schemas"]["MessageClass"] | null;
         };
+        /** AuthOut */
+        AuthOut: {
+            user: components["schemas"]["UserOut"];
+        };
         /**
          * ClaimDraft
          * @description The structured output we require from the model: claim text plus the facts it rests on.
@@ -1125,6 +1217,13 @@ export interface components {
             /** Application Status */
             application_status: string | null;
         };
+        /** LoginIn */
+        LoginIn: {
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
+        };
         /**
          * MatchOut
          * @description Why a requirement is covered: the supporting fact, or a gap (fact_id null).
@@ -1252,6 +1351,30 @@ export interface components {
              */
             shortlist_score: number;
         };
+        /** PrepareQuestionsIn */
+        PrepareQuestionsIn: {
+            /** Questions */
+            questions: string[];
+        };
+        /** PrepareQuestionsOut */
+        PrepareQuestionsOut: {
+            /** Answers */
+            answers: components["schemas"]["PreparedAnswer"][];
+        };
+        /** PreparedAnswer */
+        PreparedAnswer: {
+            /** Question */
+            question: string;
+            /** Answer */
+            answer: string;
+        };
+        /** RegisterIn */
+        RegisterIn: {
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
+        };
         /** RequirementOut */
         RequirementOut: {
             /**
@@ -1332,6 +1455,16 @@ export interface components {
             /** Note */
             note?: string | null;
         };
+        /** UserOut */
+        UserOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Email */
+            email: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1359,6 +1492,134 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    register_api_auth_register_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    login_api_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_api_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    me_api_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     import_resume_api_profile_resume_post: {
         parameters: {
             query?: never;
@@ -1366,7 +1627,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1403,7 +1666,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1434,7 +1699,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1471,7 +1738,9 @@ export interface operations {
             path: {
                 fact_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1504,7 +1773,9 @@ export interface operations {
             path: {
                 fact_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1537,7 +1808,9 @@ export interface operations {
             path: {
                 fact_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1572,7 +1845,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1603,7 +1878,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1638,7 +1915,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1671,7 +1950,9 @@ export interface operations {
             path: {
                 question_key: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1708,7 +1989,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1739,7 +2022,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1776,7 +2061,9 @@ export interface operations {
             path: {
                 job_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1809,7 +2096,9 @@ export interface operations {
             path: {
                 job_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1842,7 +2131,9 @@ export interface operations {
             path: {
                 job_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1875,7 +2166,9 @@ export interface operations {
             path: {
                 posting_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1906,7 +2199,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -1937,7 +2232,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -1974,7 +2271,9 @@ export interface operations {
             path: {
                 source_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2007,7 +2306,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2040,7 +2341,9 @@ export interface operations {
             path: {
                 application_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2073,7 +2376,9 @@ export interface operations {
             path: {
                 job_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2106,7 +2411,9 @@ export interface operations {
             path: {
                 application_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2143,7 +2450,9 @@ export interface operations {
             path: {
                 application_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2171,6 +2480,45 @@ export interface operations {
             };
         };
     };
+    prepare_questions_api_applications__application_id__prepare_questions_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                application_id: string;
+            };
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PrepareQuestionsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrepareQuestionsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     save_document_api_applications__application_id__documents__kind__put: {
         parameters: {
             query?: never;
@@ -2181,7 +2529,9 @@ export interface operations {
                 application_id: string;
                 kind: components["schemas"]["DocumentKind"];
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2218,7 +2568,9 @@ export interface operations {
             path: {
                 application_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2255,7 +2607,9 @@ export interface operations {
             path: {
                 application_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2288,7 +2642,9 @@ export interface operations {
             path: {
                 application_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2319,7 +2675,9 @@ export interface operations {
             path: {
                 application_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2350,7 +2708,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2383,7 +2743,9 @@ export interface operations {
             path: {
                 application_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2418,7 +2780,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2449,7 +2813,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2482,7 +2848,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2513,7 +2881,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2546,7 +2916,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2579,7 +2951,9 @@ export interface operations {
             path: {
                 message_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2616,7 +2990,9 @@ export interface operations {
             path: {
                 message_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody: {
             content: {
@@ -2653,7 +3029,9 @@ export interface operations {
             path: {
                 message_id: string;
             };
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {
@@ -2684,7 +3062,9 @@ export interface operations {
                 authorization?: string | null;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                jobcopilot_session?: string | null;
+            };
         };
         requestBody?: never;
         responses: {

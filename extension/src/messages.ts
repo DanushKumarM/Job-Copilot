@@ -12,7 +12,8 @@ export type ToBackground =
   // from the content script
   | { type: "submitted"; url: string }
   | { type: "confirmation"; url: string; heading: string; hash: string }
-  | { type: "session" };
+  | { type: "session" }
+  | { type: "prepare-questions"; applicationId: string; questions: string[] };
 
 export type ToContent =
   | { type: "ping" }
