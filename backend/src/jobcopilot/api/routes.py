@@ -1,6 +1,8 @@
+import hmac
 import uuid
+from typing import Annotated
 
-from fastapi import APIRouter, Cookie, HTTPException
+from fastapi import APIRouter, Cookie, File, Header, HTTPException, UploadFile
 from fastapi.responses import FileResponse, Response
 from sqlalchemy import select
 
@@ -56,7 +58,7 @@ def register(body: s.RegisterIn, response: Response, session: SessionDep):
         samesite="lax",
         secure=get_settings().auth_cookie_secure,
     )
-    return {"user": user}
+    return {"user": user, "session_token": token}
 
 
 @router.post("/auth/login", response_model=s.AuthOut, tags=["auth"])
@@ -75,23 +77,40 @@ def login(body: s.LoginIn, response: Response, session: SessionDep):
         samesite="lax",
         secure=get_settings().auth_cookie_secure,
     )
-    return {"user": user}
+    return {"user": user, "session_token": token}
 
 
 @router.post("/auth/logout", status_code=204, tags=["auth"])
 def logout(
     response: Response,
     session: SessionDep,
+    authorization: Annotated[str | None, Header()] = None,
     session_cookie: str | None = Cookie(default=None, alias=auth.SESSION_COOKIE),
 ):
-    auth.revoke_session(session, session_cookie)
+    scheme, _, token = (authorization or "").partition(" ")
+    raw_token = token if scheme.lower() == "bearer" else None
+    if raw_token:
+        auth.revoke_session(session, raw_token)
+    if session_cookie:
+        auth.revoke_session(session, session_cookie)
     session.commit()
     response.delete_cookie(auth.SESSION_COOKIE)
 
 
 @router.get("/auth/me", response_model=s.AuthOut, tags=["auth"])
-def me(user: UserDep):
-    return {"user": user}
+def me(
+    user: UserDep,
+    authorization: Annotated[str | None, Header()] = None,
+    session_cookie: Annotated[str | None, Cookie(alias=auth.SESSION_COOKIE)] = None,
+):
+    settings = get_settings()
+    scheme, _, token = (authorization or "").partition(" ")
+    raw_token = token if scheme.lower() == "bearer" else None
+    if raw_token and settings.api_token and hmac.compare_digest(raw_token.encode(), settings.api_token.encode()):
+        current_token = None
+    else:
+        current_token = raw_token or session_cookie
+    return {"user": user, "session_token": current_token}
 
 
 # --- profile -------------------------------------------------------------------------------------
@@ -100,6 +119,21 @@ def me(user: UserDep):
 @router.post("/profile/resume", response_model=list[s.FactOut], tags=["profile"])
 def import_resume(body: s.ResumeIn, session: SessionDep, user: UserDep):
     facts = profile.import_resume_text(session, user.id, body.text, body.file_name)
+    session.commit()
+    return facts
+
+
+@router.post("/profile/resume/upload", response_model=list[s.FactOut], tags=["profile"])
+async def upload_resume(
+    session: SessionDep,
+    user: UserDep,
+    file: UploadFile = File(...),  # noqa: B008
+):
+    content = await file.read()
+    if len(content) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="resume exceeds the 10 MB limit")
+    text = profile.extract_resume_text(content, file.filename or "resume.txt")
+    facts = profile.import_resume_text(session, user.id, text, file.filename or "resume.txt")
     session.commit()
     return facts
 

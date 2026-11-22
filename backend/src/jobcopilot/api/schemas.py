@@ -32,6 +32,7 @@ class UserOut(BaseModel):
 
 class AuthOut(BaseModel):
     user: UserOut
+    session_token: str | None = None
 
 
 class FactOut(ORM):

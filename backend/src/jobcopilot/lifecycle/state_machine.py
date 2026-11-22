@@ -9,6 +9,37 @@ from dataclasses import dataclass
 from jobcopilot.enums import Actor, AppStatus, EvidenceKind
 
 S = AppStatus
+ApplicationStatus = AppStatus
+ActorType = Actor
+
+
+class TransitionError(Exception):
+    pass
+
+
+class ConcurrencyConflictError(Exception):
+    pass
+
+
+# Monotonic progression rank to prevent out-of-order emails from downgrading state
+STATE_RANK: dict[AppStatus, int] = {
+    S.DISCOVERED: 10,
+    S.REJECTED_BY_RULES: 15,
+    S.SHORTLISTED: 20,
+    S.FAILED: 25,
+    S.PREPARED: 30,
+    S.NEEDS_MANUAL_INTERVENTION: 35,
+    S.AWAITING_APPROVAL: 40,
+    S.APPROVED: 50,
+    S.SUBMISSION_IN_PROGRESS: 60,
+    S.SUBMITTED_UNCONFIRMED: 70,
+    S.SUBMISSION_CONFIRMED: 80,
+    S.ASSESSMENT: 90,
+    S.INTERVIEW: 100,
+    S.OFFER: 110,
+    S.REJECTED: 110,
+    S.WITHDRAWN: 120,
+}
 
 OUTCOMES = frozenset({S.REJECTED, S.ASSESSMENT, S.INTERVIEW, S.OFFER})
 TERMINAL = frozenset({S.REJECTED, S.OFFER, S.WITHDRAWN})
