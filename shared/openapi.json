@@ -5,6 +5,211 @@
   "version": "0.1.0"
  },
  "paths": {
+  "/api/auth/register": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Register",
+    "operationId": "register_api_auth_register_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RegisterIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuthOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/auth/login": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Login",
+    "operationId": "login_api_auth_login_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LoginIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuthOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/auth/logout": {
+   "post": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Logout",
+    "operationId": "logout_api_auth_logout_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/auth/me": {
+   "get": {
+    "tags": [
+     "auth"
+    ],
+    "summary": "Me",
+    "operationId": "me_api_auth_me_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AuthOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/profile/resume": {
    "post": {
     "tags": [
@@ -27,6 +232,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -51,6 +272,85 @@
           "$ref": "#/components/schemas/FactOut"
          },
          "title": "Response Import Resume Api Profile Resume Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/profile/resume/upload": {
+   "post": {
+    "tags": [
+     "profile"
+    ],
+    "summary": "Upload Resume",
+    "operationId": "upload_resume_api_profile_resume_upload_post",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_upload_resume_api_profile_resume_upload_post"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/FactOut"
+         },
+         "title": "Response Upload Resume Api Profile Resume Upload Post"
         }
        }
       }
@@ -107,6 +407,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -157,6 +473,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -227,6 +559,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -285,6 +633,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -345,6 +709,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "requestBody": {
@@ -404,6 +784,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -450,6 +846,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -509,6 +921,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -572,6 +1000,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "requestBody": {
@@ -631,6 +1075,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -699,6 +1159,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -762,6 +1238,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -820,6 +1312,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -881,6 +1389,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -940,6 +1464,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -988,6 +1528,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -1039,6 +1595,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -1109,6 +1681,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -1178,6 +1766,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -1241,6 +1845,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -1301,6 +1921,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -1359,6 +1995,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -1428,6 +2080,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -1507,6 +2175,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "requestBody": {
@@ -1575,6 +2259,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -1645,6 +2345,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -1705,6 +2421,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -1758,6 +2490,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -1809,6 +2557,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -1870,6 +2634,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "requestBody": {
@@ -1929,6 +2709,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -1982,6 +2778,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -2033,6 +2845,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -2082,6 +2910,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -2134,6 +2978,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -2197,6 +3057,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -2268,6 +3144,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "requestBody": {
@@ -2337,6 +3229,22 @@
        ],
        "title": "Authorization"
       }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
+      }
      }
     ],
     "responses": {
@@ -2385,6 +3293,22 @@
         }
        ],
        "title": "Authorization"
+      }
+     },
+     {
+      "name": "jobcopilot_session",
+      "in": "cookie",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Jobcopilot Session"
       }
      }
     ],
@@ -2811,6 +3735,44 @@
      "application_id"
     ],
     "title": "AssignIn"
+   },
+   "AuthOut": {
+    "properties": {
+     "user": {
+      "$ref": "#/components/schemas/UserOut"
+     },
+     "session_token": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Session Token",
+      "default": null
+     }
+    },
+    "type": "object",
+    "required": [
+     "user"
+    ],
+    "title": "AuthOut"
+   },
+   "Body_upload_resume_api_profile_resume_upload_post": {
+    "properties": {
+     "file": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "File"
+     }
+    },
+    "type": "object",
+    "required": [
+     "file"
+    ],
+    "title": "Body_upload_resume_api_profile_resume_upload_post"
    },
    "ClaimDraft": {
     "properties": {
@@ -3694,6 +4656,28 @@
     ],
     "title": "JobSummary"
    },
+   "LoginIn": {
+    "properties": {
+     "email": {
+      "type": "string",
+      "maxLength": 320,
+      "minLength": 3,
+      "title": "Email"
+     },
+     "password": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 8,
+      "title": "Password"
+     }
+    },
+    "type": "object",
+    "required": [
+     "email",
+     "password"
+    ],
+    "title": "LoginIn"
+   },
    "MatchOut": {
     "properties": {
      "requirement_id": {
@@ -3991,6 +4975,28 @@
     "title": "Preferences",
     "description": "Stored in users.preferences. Empty lists mean \"no constraint\"."
    },
+   "RegisterIn": {
+    "properties": {
+     "email": {
+      "type": "string",
+      "maxLength": 320,
+      "minLength": 3,
+      "title": "Email"
+     },
+     "password": {
+      "type": "string",
+      "maxLength": 200,
+      "minLength": 8,
+      "title": "Password"
+     }
+    },
+    "type": "object",
+    "required": [
+     "email",
+     "password"
+    ],
+    "title": "RegisterIn"
+   },
    "RequirementOut": {
     "properties": {
      "id": {
@@ -4191,6 +5197,25 @@
      "lock_version"
     ],
     "title": "TransitionIn"
+   },
+   "UserOut": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "email": {
+      "type": "string",
+      "title": "Email"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "email"
+    ],
+    "title": "UserOut"
    },
    "ValidationError": {
     "properties": {

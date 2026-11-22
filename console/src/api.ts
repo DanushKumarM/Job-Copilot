@@ -120,6 +120,27 @@ export const api = {
   facts: (status?: string) => json<Fact[]>("GET", `/profile/facts${q({ status })}`),
   importResume: (text: string, file_name: string) =>
     json<Fact[]>("POST", "/profile/resume", { text, file_name }),
+  uploadResume: async (file: File): Promise<Fact[]> => {
+    const form = new FormData();
+    form.append("file", file);
+    const headers: Record<string, string> = {};
+    if (memoryToken) headers.Authorization = "Bearer " + memoryToken;
+    const response = await fetch("/api/profile/resume/upload", {
+      method: "POST",
+      headers,
+      body: form,
+      credentials: "include",
+    });
+    if (!response.ok) {
+      let message = `Resume upload failed (${response.status})`;
+      try {
+        const body = await response.json();
+        if (body.detail) message = body.detail;
+      } catch {}
+      throw new Error(message);
+    }
+    return await response.json() as Fact[];
+  },
   addFact: (kind: FactKind, statement: string, details: Record<string, unknown> = {}) =>
     json<Fact>("POST", "/profile/facts", { kind, statement, details }),
   verifyFact: (id: string) => json<Fact>("POST", `/profile/facts/${id}/verify`),

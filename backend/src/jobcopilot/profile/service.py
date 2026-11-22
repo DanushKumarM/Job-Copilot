@@ -1,9 +1,11 @@
 """Profile and evidence: facts are proposed, verified by the user, and superseded rather than edited."""
 
 import re
+import unicodedata
 import uuid
 from collections.abc import Iterable
 from datetime import timedelta
+from io import BytesIO
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
@@ -156,6 +158,52 @@ _TOTAL_YEARS = re.compile(
 )
 
 
+def normalize_resume_text(text: str) -> str:
+    """Normalize text extracted from a PDF, DOCX, or pasted resume."""
+    text = unicodedata.normalize("NFKC", text.replace("\r\n", "\n").replace("\r", "\n"))
+    text = re.sub(r"[ \t]+\n", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    # PDF extractors often omit line breaks before bullet characters.
+    text = re.sub(r"(?<!^)(?=[-•·▪◦])\s*", "\n", text)
+    return text.strip()
+
+
+def extract_resume_text(content: bytes, file_name: str) -> str:
+    """Extract plain text from supported resume files."""
+    suffix = file_name.lower().rsplit(".", 1)[-1] if "." in file_name else ""
+    if suffix == "pdf":
+        from pypdf import PdfReader
+
+        reader = PdfReader(BytesIO(content))
+        if reader.is_encrypted:
+            raise DomainError("this PDF is password protected")
+        text = "\n".join((page.extract_text() or "") for page in reader.pages)
+    elif suffix in {"doc", "docx"}:
+        if suffix == "doc":
+            raise DomainError("legacy .doc resumes are not supported; save the resume as PDF or DOCX")
+        from docx import Document
+
+        document = Document(BytesIO(content))
+        parts = [
+            paragraph.text
+            for paragraph in document.paragraphs
+            if paragraph.text.strip()
+        ]
+        for table in document.tables:
+            for row in table.rows:
+                parts.append(" | ".join(cell.text.strip() for cell in row.cells if cell.text.strip()))
+        text = "\n".join(parts)
+    elif suffix in {"txt", "md"}:
+        text = content.decode("utf-8-sig")
+    else:
+        raise DomainError("supported resume formats are PDF, DOCX, TXT, and MD")
+
+    text = normalize_resume_text(text)
+    if len(text) < 20:
+        raise DomainError("could not extract usable text from this resume")
+    return text
+
+
 def import_resume_text(session: Session, user_id: uuid.UUID, text: str, file_path: str) -> list[ProfileFact]:
     """Split resume text into proposed facts: one per bullet, one per listed skill, total experience.
 
@@ -167,7 +215,7 @@ def import_resume_text(session: Session, user_id: uuid.UUID, text: str, file_pat
 
     proposed: list[ProfileFact] = []
     seen_skills: set[str] = set()
-    for raw in text.splitlines():
+    for raw in normalize_resume_text(text).splitlines():
         line = raw.strip()
         if not line:
             continue

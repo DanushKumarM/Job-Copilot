@@ -21,10 +21,14 @@ def current_user(
 ) -> User:
     settings = get_settings()
     scheme, _, token = (authorization or "").partition(" ")
-    if settings.api_token and scheme.lower() == "bearer" and hmac.compare_digest(
-        token.encode(), settings.api_token.encode()
-    ):
-        return get_or_create_user(session, settings.owner_email)
+    if scheme.lower() == "bearer" and token:
+        if settings.api_token and hmac.compare_digest(
+            token.encode(), settings.api_token.encode()
+        ):
+            return get_or_create_user(session, settings.owner_email)
+        user = auth.user_for_session(session, token)
+        if user:
+            return user
     user = auth.user_for_session(session, session_cookie)
     if user:
         return user

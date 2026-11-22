@@ -564,26 +564,135 @@ erDiagram
 
 ---
 
-## 13. Application lifecycle (draft)
+## 13. Application Lifecycle & State Machine (Final Specification)
 
-This section is a draft; the full state machine, transition rules, timeouts, and recovery model are the next design step.
+### 13.1 Core Architectural Insight: Separating Hold Flags from Lifecycle States
 
-| State | Meaning |
-|---|---|
-| Discovered | Job ingested |
-| Rejected by rules | Failed hard filters |
-| Shortlisted | Passed filters; user or rule selected it |
-| Application prepared | Generated documents exist and passed validation |
-| Awaiting approval | Waiting for the user's review |
-| Approved | User approved the packet |
-| Submission in progress | Extension filling form or user submitting |
-| Submitted (unconfirmed) | Submission attempt recorded, no external evidence yet |
-| Submission confirmed | Confirmation page or email linked as evidence |
-| Outcome states | Rejected, Assessment, Interview, Offer, Withdrawn |
-| Failed | Unrecoverable error, with diagnostics |
-| Needs manual intervention | Ambiguous evidence, expired session, or validator escalation |
+If you make `NEEDS_MANUAL_INTERVENTION` or `FAILED` regular states in your state machine, you lose track of where the application was before the problem happened. For example, if a low-confidence email arrives while an application is in `SUBMITTED_CONFIRMED`, moving the status to `NEEDS_MANUAL_INTERVENTION` overwrites the fact that the application was confirmed!
 
-Rule: no transition to *Submission confirmed* without an `evidence` row. Some portals send no confirmation; those applications stay *Submitted (unconfirmed)* rather than failing, and analytics report confirmed and unconfirmed counts separately.
+**The Senior Solution:**
+Keep `applications.status` strictly for the business lifecycle stage, and track operational blocks as orthogonal columns on the `applications` table:
+- **`status`**: The business stage (`DISCOVERED` -> `OFFER` / `REJECTED` / `WITHDRAWN`).
+- **`manual_hold_reason`** *(nullable text)*: Non-null when human intervention is required (e.g., `LOW_CONFIDENCE_EMAIL`, `VALIDATOR_MAX_RETRIES`, `STALE_JOB_WARNING`, `CITED_FACT_SUPERSEDED`, `AMBIGUOUS_EMAIL_EVIDENCE`).
+- **`last_error`** *(nullable jsonb)*: Diagnostics from the most recent failed background worker attempt.
+
+---
+
+### 13.2 State Definitions (ApplicationStatus)
+
+```mermaid
+stateDiagram-v2
+    [*] --> DISCOVERED : Job ingested
+    DISCOVERED --> REJECTED_BY_RULES : Hard filter failed
+    DISCOVERED --> SHORTLISTED : Passed filters & score >= threshold
+    REJECTED_BY_RULES --> SHORTLISTED : User manual override
+    
+    SHORTLISTED --> PREPARING : Generation job queued
+    PREPARING --> AWAITING_APPROVAL : Claims validated & PDF rendered
+    PREPARING --> SHORTLISTED : Generation failed (retryable)
+    
+    AWAITING_APPROVAL --> PREPARING : User requests regeneration
+    AWAITING_APPROVAL --> APPROVED : User approves packet (all claims verified)
+    
+    APPROVED --> AWAITING_APPROVAL : User edits claims after approval
+    APPROVED --> SUBMISSION_IN_PROGRESS : Extension clicks Fill / Packet exported
+    
+    SUBMISSION_IN_PROGRESS --> APPROVED : User cancels / Extension timeout (30m)
+    SUBMISSION_IN_PROGRESS --> SUBMITTED_UNCONFIRMED : User clicks Submit / Manual mark
+    SUBMISSION_IN_PROGRESS --> SUBMITTED_CONFIRMED : Extension captures confirmation DOM
+    
+    SUBMITTED_UNCONFIRMED --> SUBMITTED_CONFIRMED : Confirmation email / DOM evidence linked
+    
+    SUBMITTED_UNCONFIRMED --> ASSESSMENT : Assessment email linked
+    SUBMITTED_UNCONFIRMED --> INTERVIEW : Interview email linked
+    SUBMITTED_UNCONFIRMED --> REJECTED : Rejection email linked
+    
+    SUBMITTED_CONFIRMED --> ASSESSMENT : Assessment email linked
+    SUBMITTED_CONFIRMED --> INTERVIEW : Interview email linked
+    SUBMITTED_CONFIRMED --> REJECTED : Rejection email linked
+    
+    ASSESSMENT --> INTERVIEW : Interview email linked
+    ASSESSMENT --> REJECTED : Rejection email linked
+    
+    INTERVIEW --> OFFER : Offer email / User update
+    INTERVIEW --> REJECTED : Rejection email linked
+```
+
+> **Note:** Any active state can transition to `WITHDRAWN` if initiated by `USER`.
+
+---
+
+### 13.3 Complete Transition & Guard Table
+
+Every state change must pass through `transition_application()`. No code outside the lifecycle module is permitted to mutate `applications.status`.
+
+| # | From State(s) | To State | Allowed Actor(s) | Database & Domain Guard Conditions (Must Hold Inside Transaction) | Side Effects |
+|---|---|---|---|---|---|
+| **T1** | `DISCOVERED` | `REJECTED_BY_RULES` | `SYSTEM` | `match_evaluations` row exists with `hard_filter_pass = false`. | None |
+| **T2** | `DISCOVERED`, `REJECTED_BY_RULES` | `SHORTLISTED` | `SYSTEM`, `USER` | If `SYSTEM`: `hard_filter_pass = true` AND `score >= threshold`. If `USER`: override allowed regardless of score. | Enqueue `prepare_application_task` if auto-prep enabled. |
+| **T3** | `SHORTLISTED`, `AWAITING_APPROVAL` | `PREPARING` | `SYSTEM`, `USER` | At least 1 verified, non-superseded `profile_fact` exists for `user_id`. | Enqueue LLM generation & PDF render job. |
+| **T4** | `PREPARING` | `AWAITING_APPROVAL` | `WORKER` | A `generated_documents` row exists for this application where 0 claims lack a valid `claim_evidence` link to a verified, non-superseded `profile_fact`, AND `rendered_path` (PDF) exists on disk. | Clear `last_error`. |
+| **T5** | `AWAITING_APPROVAL` | `APPROVED` | `USER` | Re-verifies inside transaction that none of the cited `profile_facts` were superseded or rejected while sitting in the review queue. Job freshness != `'CLOSED'`. | Lock `generated_documents.state = 'APPROVED'`. |
+| **T6** | `APPROVED` | `SUBMISSION_IN_PROGRESS` | `EXTENSION`, `USER` | Active `APPROVED` document packet exists. | Set `submission_started_at = now()`. |
+| **T7** | `SUBMISSION_IN_PROGRESS` | `APPROVED` | `EXTENSION`, `SYSTEM`, `USER` | Extension aborted, user cancelled, or lease expired (`now() - submission_started_at > 30 mins`). | Clear `submission_started_at`. |
+| **T8** | `SUBMISSION_IN_PROGRESS`, `APPROVED` | `SUBMITTED_UNCONFIRMED` | `EXTENSION`, `USER` | User clicked Submit on unsupported portal or extension recorded form submit before confirmation page loaded. | Set `submitted_at = coalesce(submitted_at, now())`. |
+| **T9** | `SUBMISSION_IN_PROGRESS`, `APPROVED`, `SUBMITTED_UNCONFIRMED` | `SUBMITTED_CONFIRMED` | `EXTENSION`, `EMAIL_CLASSIFIER`, `USER` | **Mandatory Guard:** `evidence_id IS NOT NULL` AND `evidence.kind IN ('CONFIRMATION_PAGE', 'CONFIRMATION_EMAIL', 'MANUAL_SCREENSHOT')` AND `evidence.confidence >= 0.85`. | Set `submitted_at = coalesce(submitted_at, now())`, `confirmed_at = now()`. |
+| **T10** | `SUBMITTED_UNCONFIRMED`, `SUBMITTED_CONFIRMED`, `ASSESSMENT` | `ASSESSMENT` / `INTERVIEW` | `EMAIL_CLASSIFIER`, `USER` | If `EMAIL_CLASSIFIER`: `evidence_id IS NOT NULL` AND `evidence.confidence >= 0.85`. (If transitioning from `SUBMITTED_UNCONFIRMED`, implicitly confirms submission: `confirmed_at = coalesce(confirmed_at, now())`). | Notify user in console. |
+| **T11** | `SUBMITTED_UNCONFIRMED`, `SUBMITTED_CONFIRMED`, `ASSESSMENT`, `INTERVIEW` | `REJECTED` | `EMAIL_CLASSIFIER`, `USER` | If `EMAIL_CLASSIFIER`: `evidence_id IS NOT NULL` AND `evidence.confidence >= 0.85`. | Record terminal outcome timestamp. |
+| **T12** | `INTERVIEW`, `SUBMITTED_CONFIRMED` | `OFFER` | `EMAIL_CLASSIFIER`, `USER` | `evidence_id IS NOT NULL` OR `actor == 'USER'`. | Record terminal outcome timestamp. |
+| **T13** | Any non-terminal state | `WITHDRAWN` | `USER` | `actor == 'USER'`. | Cancel any pending Procrastinate jobs for `application_id`. |
+
+---
+
+### 13.4 Concurrency Control, Idempotency, and Race Conditions
+
+Real-world race conditions will happen—for example, your Chrome extension captures the "Thank You for Applying" DOM at the exact same millisecond the Gmail worker ingests the "Thank You for Applying" email. Here is how the state machine guarantees zero corruption:
+
+#### 1. Optimistic Concurrency Control (`lock_version`)
+Every transition executes an atomic conditional `UPDATE`:
+
+```sql
+UPDATE applications
+SET status = :to_status,
+    lock_version = lock_version + 1,
+    submitted_at = COALESCE(submitted_at, :submitted_at),
+    confirmed_at = COALESCE(confirmed_at, :confirmed_at),
+    updated_at = NOW()
+WHERE id = :application_id
+  AND lock_version = :expected_lock_version;
+```
+
+If `rowcount == 0`, another actor modified the row concurrently. The service reloads the row:
+- **Idempotent No-Op Rule:** If the reloaded row is already in `:to_status` (e.g., the extension already moved it to `SUBMITTED_CONFIRMED` 50ms before the Gmail worker), the second actor still attaches its evidence row and logs an `EVIDENCE_ATTACHED` event in `application_events`, then returns 200 OK without throwing an error.
+- **Out-of-Order Progression Rule (Monotonicity):** Statuses have a numerical rank (`SUBMITTED_UNCONFIRMED = 70`, `SUBMITTED_CONFIRMED = 80`, `INTERVIEW = 100`). If a delayed confirmation email arrives after the user has already moved the application to `INTERVIEW`, the state machine attaches the confirmation email as evidence and sets `confirmed_at` if null, but does not downgrade status from `INTERVIEW` back to `SUBMITTED_CONFIRMED`.
+
+#### 2. Evidence Idempotency (`external_ref` UK)
+- For Gmail: `external_ref = "gmail:msg:{gmail_message_id}"`
+- For Extension DOM capture: `external_ref = "ext:sha256:{hash(application_id + canonical_url + date_bucket)}"`
+
+Because `evidence.external_ref` has a `UNIQUE` constraint, if a worker crashes mid-flight and replays the same Gmail message, `INSERT INTO evidence ... ON CONFLICT (external_ref) DO NOTHING` ensures the transition is never double-applied.
+
+---
+
+### 13.5 Timeout, Retry, and Crash Recovery Rules
+
+| Failure Scenario | Detection Mechanism | Automated Recovery / Escalation Rule |
+|---|---|---|
+| **1. Citation Validator fails on LLM output** *(uncited claim or fabricated number)* | Inline check inside `prepare_application_task` | Re-prompt LLM up to 2 retries (`max_attempts = 3`), injecting the exact validator error into the retry prompt. If attempt 3 fails: revert status from `PREPARING` -> `SHORTLISTED`, set `manual_hold_reason = 'VALIDATOR_MAX_RETRIES'`, log diagnostics to `last_error`. |
+| **2. LLM Provider Rate Limit / Timeout** *(Ollama busy or Gemini 429)* | HTTP 429 / 5xx or timeout exception | Handled by Procrastinate retry policy: exponential backoff (15s, 60s, 300s). Does not trip `manual_hold_reason` until all 3 infrastructure retries fail. |
+| **3. Orphaned PREPARING state** *(Worker container killed by OOM or laptop shut down)* | Periodic sweeper task (every 15 mins) checks `status = 'PREPARING' AND updated_at < now() - 10 mins` | Re-enqueues `prepare_application_task` idempotently. |
+| **4. Abandoned Extension Fill (`SUBMISSION_IN_PROGRESS`)** *(User clicked Fill, then closed tab)* | Periodic sweeper checks `status = 'SUBMISSION_IN_PROGRESS' AND submission_started_at < now() - 30 mins` | Automatically transitions `SUBMISSION_IN_PROGRESS` -> `APPROVED` (`actor = 'SYSTEM'`), so the application reappears in the Ready-to-Submit queue. |
+| **5. Ambiguous Email Match** *(Classifier sees rejection from Greenhouse, but 2 companies match)* | `0.40 <= match_confidence < 0.85` | Do not transition status. Insert `inbound_messages` with `matched_application_id = candidate_id`, set `applications.manual_hold_reason = 'AMBIGUOUS_EMAIL_EVIDENCE'`, and surface in Manual Intervention UI. |
+| **6. Fact Edited After Approval** *(User updates a profile_fact while applications are APPROVED)* | Triggered inside `supersede_fact()` service call | Query all applications in `AWAITING_APPROVAL` or `APPROVED` citing the superseded `fact_id`. Transition `APPROVED` -> `AWAITING_APPROVAL` with `manual_hold_reason = 'CITED_FACT_SUPERSEDED'`. |
+
+---
+
+### 13.6 Architectural Defense: Why This Design Wins in System Design Interviews
+
+When asked, *"Tell me about a complex backend system you designed,"* this module provides three concrete engineering mechanisms:
+1. **Separating orthogonal `manual_hold_reason` flags from the primary finite state machine:** Operational hiccups never erase business state history.
+2. **Optimistic locking (`lock_version`) combined with monotonic state ranks (`STATE_RANK`):** Concurrent webhooks, emails, and browser extension events never overwrite a later state with an earlier one.
+3. **Database-level guard enforcement:** `SUBMITTED_CONFIRMED` is mathematically impossible to reach without a foreign key to an evidence row with `confidence >= 0.85`.
 
 ---
 

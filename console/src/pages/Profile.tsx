@@ -226,17 +226,40 @@ function ResumeImport({ onDone }: { onDone: () => void }) {
   const readFile = async (file: File | undefined) => {
     if (!file) return;
     setName(file.name);
-    setText(await file.text());
+    if (/\.(txt|md)$/i.test(file.name)) {
+      setText(await file.text());
+    } else {
+      setText("");
+    }
+  };
+  const importFile = async (file: File | undefined) => {
+    if (!file) return;
+    setName(file.name);
+    if (!/\.(txt|md)$/i.test(file.name)) {
+      const facts = await run("import", () => api.uploadResume(file));
+      if (facts) {
+        notice.ok(`${facts.length} facts proposed. Verify each one below.`);
+        onDone();
+      }
+    }
   };
   return (
     <form className="card" onSubmit={submit}>
       <h2>Import resume text</h2>
       <p className="subtle small">
-        Paste plain text, or pick a .txt or .md export. Bullets become facts; a “Skills:” line becomes one fact per
-        skill; “N years of experience” becomes your total experience. Nothing is used until you verify it.
+        Paste text, or upload a PDF, DOCX, TXT, or MD resume. Bullets become facts; a “Skills:” line becomes one fact
+        per skill; “N years of experience” becomes your total experience. Nothing is used until you verify it.
       </p>
       <Field label="File (optional)">
-        <input type="file" accept=".txt,.md,text/plain" onChange={(e) => readFile(e.target.files?.[0])} />
+        <input
+          type="file"
+          accept=".txt,.md,.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            void readFile(file);
+            void importFile(file);
+          }}
+        />
       </Field>
       <Field label="Resume text">
         <textarea rows={12} value={text} onChange={(e) => setText(e.target.value)} required minLength={20} />
